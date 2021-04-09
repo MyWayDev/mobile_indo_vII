@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:mor_release/models/area.dart';
 import 'package:mor_release/models/user.dart';
+import 'package:mor_release/pages/profile/bankDropdown.dart';
 import 'package:mor_release/scoped/connected.dart';
-import 'package:http/http.dart' as http;
-import 'package:searchable_dropdown/searchable_dropdown.dart';
 import '../const.dart';
 
 class ProfileForm extends StatefulWidget {
@@ -18,18 +15,12 @@ class ProfileForm extends StatefulWidget {
 
 class _ProfileFormState extends State<ProfileForm> {
   NewMember _memberEditData = new NewMember();
-  List<Bank> banks;
-  List<DropdownMenuItem> bankList = [];
-  String bankName = '';
-  String selectedBank;
-  var bankSplit;
 
-  //done
   TextEditingController cAddress; //done
   TextEditingController cTelePhone; //done
   TextEditingController cBanKAccountNumber; //done
   TextEditingController cBankAccountName;
-  TextEditingController cTaxNumber; //done
+  TextEditingController cTaxNumber;
 
   final FocusNode focusTelephone = new FocusNode();
   final FocusNode focusAccountName = new FocusNode();
@@ -45,71 +36,39 @@ class _ProfileFormState extends State<ProfileForm> {
     });
   }
 
-  bool isChanged = false;
-  bool veri = false;
+  bool _veri = false;
 
-  void resetVeri() {
+  void _resetVeri() {
     cAddress.clear();
     cBanKAccountNumber.clear();
     cTaxNumber.clear();
     cTelePhone.clear();
     cBankAccountName.clear();
 
-    veri = false;
-    isChanged = false;
+    _veri = false;
+    widget.model.isBankChanged = false;
   }
 
-  String getBankName() {
-    var bL = bankList;
-    String bLString = '';
-    if (_memberEditData.bankId != '') {
-      bLString = bL
-          .firstWhere((b) =>
-              b.value.toString().split('\ ').first == _memberEditData.bankId)
-          .value
-          .toString();
-    } else {
-      bLString = 'Bank';
-    }
-
-    return bLString;
+  bool _validPhotoInput(NewMember memberEditData, User userInfo) {
+    bool _valid = false;
+    print(memberEditData.taxNumber + '=>' + userInfo.taxPhotoUrl);
+    memberEditData.taxNumber != '' && userInfo.taxPhotoUrl == ''
+        ? _valid = false
+        : _valid = true;
+    return _valid;
   }
 
-  void getBanks() async {
-    banks = [];
-    final response =
-        await http.get('http://34.101.79.170:5000/api/get_bank_info/');
-    if (response.statusCode == 200) {
-      final _banks = json.decode(response.body) as List;
-      banks = _banks.map((s) => Bank.json(s)).toList();
-      //areaPlace.forEach((a) => print(a.spName));
-    } else {
-      banks = [];
-    }
-
-    if (banks.isNotEmpty) {
-      for (var t in banks) {
-        String sValue = "${t.bankId}" + " " + "${t.bankName}";
-        bankList.add(
-          DropdownMenuItem(
-              child: Center(
-                child: Text(
-                  sValue,
-                  style: TextStyle(fontSize: 12),
-                ),
-              ),
-              value: sValue),
-        );
-      }
-      bankName = getBankName();
-    }
+  void resetControllers() {
+    cAddress.text = _memberEditData.address;
+    cBanKAccountNumber.text = _memberEditData.bankAccountNumber;
+    cBankAccountName.text = _memberEditData.bankAccoutName;
+    cTaxNumber.text = _memberEditData.taxNumber;
+    cTelePhone.text = _memberEditData.telephone;
   }
 
   @override
   void initState() {
     _memberEditData = widget.model.nodeEditData;
-    getBanks();
-
     super.initState();
   }
 
@@ -118,82 +77,13 @@ class _ProfileFormState extends State<ProfileForm> {
     super.dispose();
   }
 
-  /*void updateFormData() {
-    focusNodeNickname.unfocus();
-    focusNodeAboutMe.unfocus();
-
-    setState(() {
-      isLoading = true;
-    });
-    FirebaseDatabase.instance
-        .reference()
-        .child('indoDb/users/en-US/$id')
-        .update({
-      'name': name,
-      'areaId': areaId,
-    }).then((data) async {
-      //await prefs.setString('name', name);
-      // await prefs.setString('areaId', areaId);
-      // await prefs.setString('idPhotoUrl', idPhotoUrl);
-      setState(() {
-        isLoading = false;
-      });
-
-      Fluttertoast.showToast(msg: "Update success");
-    }).catchError((err) {
-      setState(() {
-        isLoading = false;
-      });
-
-      Fluttertoast.showToast(msg: err.toString());
-    });
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            child: Theme(
-                data: Theme.of(context).copyWith(primaryColor: Colors.pink),
-                child: SearchableDropdown(
-                  searchHint: Text(
-                    'Select or Type Bank Name',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                  isExpanded: true,
-                  //style: TextStyle(fontSize: 12),
-                  hint: Center(
-                    child: Text(
-                      bankName,
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-
-                  iconEnabledColor: Colors.pink[200],
-                  iconDisabledColor: Colors.grey,
-                  items: bankList,
-                  value: selectedBank,
-
-                  onChanged: (value) {
-                    setState(() {
-                      selectedBank = value;
-                      bankSplit = selectedBank.split('\ ');
-                      print(bankSplit.first);
-                      _memberEditData.bankId = bankSplit.first;
-
-                      isChanged = true;
-                    });
-                  },
-                )),
-            margin:
-                EdgeInsets.only(left: 85.0, right: 85.0, bottom: 10, top: 8),
-          ),
+          BankDropdown(widget.model),
           Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -207,7 +97,7 @@ class _ProfileFormState extends State<ProfileForm> {
                   child: Container(
                     width: 120,
                     child: Text(
-                      'Bank Account Number',
+                      'No. Rekening',
                       style: TextStyle(
                           fontSize: 12,
                           fontStyle: FontStyle.italic,
@@ -224,13 +114,13 @@ class _ProfileFormState extends State<ProfileForm> {
                         data: Theme.of(context)
                             .copyWith(primaryColor: primaryColor),
                         child: TextFormField(
-                          // enabled: veri,
+                          // enabled: _veri,
                           initialValue: _memberEditData.bankAccountNumber,
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
                           style: TextStyle(fontSize: 12),
                           decoration: InputDecoration(
-                            hintText: 'Account Name',
+                            hintText: '',
                             contentPadding: EdgeInsets.all(3.0),
                             hintStyle: TextStyle(color: greyColor),
                           ),
@@ -238,7 +128,7 @@ class _ProfileFormState extends State<ProfileForm> {
                           onChanged: (value) {
                             setState(() {
                               _memberEditData.bankAccountNumber = value;
-                              isChanged = true;
+                              widget.model.isBankChanged = true;
                             });
                           },
                           focusNode: focusBankAccount,
@@ -260,7 +150,7 @@ class _ProfileFormState extends State<ProfileForm> {
                   child: Container(
                     width: 120,
                     child: Text(
-                      'Bank Account Name Holder',
+                      'Nama Pemilik Rekening',
                       style: TextStyle(
                           fontSize: 12,
                           fontStyle: FontStyle.italic,
@@ -277,13 +167,13 @@ class _ProfileFormState extends State<ProfileForm> {
                         data: Theme.of(context)
                             .copyWith(primaryColor: primaryColor),
                         child: TextFormField(
-                          // enabled: veri,
+                          // enabled: _veri,
                           initialValue: _memberEditData.bankAccoutName,
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
                           style: TextStyle(fontSize: 12),
                           decoration: InputDecoration(
-                            hintText: 'Account Name',
+                            hintText: '',
                             contentPadding: EdgeInsets.all(3.0),
                             hintStyle: TextStyle(color: greyColor),
                           ),
@@ -291,7 +181,7 @@ class _ProfileFormState extends State<ProfileForm> {
                           onChanged: (value) {
                             setState(() {
                               _memberEditData.bankAccoutName = value;
-                              isChanged = true;
+                              widget.model.isBankChanged = true;
                             });
                           },
                           focusNode: focusAccountName,
@@ -311,7 +201,7 @@ class _ProfileFormState extends State<ProfileForm> {
                       child: Column(children: <Widget>[
                         Container(
                           child: Text(
-                            'Address',
+                            'Alamat Lengkap',
                             style: TextStyle(
                                 fontSize: 12,
                                 fontStyle: FontStyle.italic,
@@ -326,7 +216,7 @@ class _ProfileFormState extends State<ProfileForm> {
                           enabled: true,
                           style: TextStyle(fontSize: 13),
                           decoration: InputDecoration(
-                            hintText: 'Address',
+                            hintText: '',
                             contentPadding: EdgeInsets.all(3.0),
                             hintStyle: TextStyle(color: greyColor),
                           ),
@@ -334,7 +224,7 @@ class _ProfileFormState extends State<ProfileForm> {
                           onChanged: (value) {
                             setState(() {
                               _memberEditData.address = value;
-                              isChanged = true;
+                              widget.model.isBankChanged = true;
                             });
                           },
                           focusNode: focusAddress,
@@ -346,7 +236,7 @@ class _ProfileFormState extends State<ProfileForm> {
                         child: Column(children: <Widget>[
                       Container(
                         child: Text(
-                          'Telephone',
+                          'No. Telepon',
                           style: TextStyle(
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
@@ -361,7 +251,7 @@ class _ProfileFormState extends State<ProfileForm> {
                         enabled: true,
                         style: TextStyle(fontSize: 13),
                         decoration: InputDecoration(
-                          hintText: 'Telephone',
+                          hintText: '',
                           contentPadding: EdgeInsets.all(3.0),
                           hintStyle: TextStyle(color: greyColor),
                         ),
@@ -369,7 +259,7 @@ class _ProfileFormState extends State<ProfileForm> {
                         onChanged: (value) {
                           setState(() {
                             _memberEditData.telephone = value;
-                            isChanged = true;
+                            widget.model.isBankChanged = true;
                           });
                         },
                         focusNode: focusTelephone,
@@ -382,7 +272,7 @@ class _ProfileFormState extends State<ProfileForm> {
           ),
           Container(
             child: Text(
-              'Tax Number',
+              'NPWP',
               style: TextStyle(
                   fontSize: 13,
                   fontStyle: FontStyle.italic,
@@ -402,15 +292,15 @@ class _ProfileFormState extends State<ProfileForm> {
                 keyboardType: TextInputType.multiline,
                 style: TextStyle(fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'Tax Number',
+                  hintText: '',
                   hintStyle: TextStyle(color: greyColor, fontSize: 12),
                 ),
                 controller: cTaxNumber,
                 onChanged: (value) {
                   setState(() {
-                    getBankName();
+                    //getBankName();
                     _memberEditData.taxNumber = value;
-                    isChanged = true;
+                    widget.model.isBankChanged = true;
                   });
                 },
                 focusNode: focusTaxNumber,
@@ -432,7 +322,7 @@ class _ProfileFormState extends State<ProfileForm> {
       mainAxisSize: MainAxisSize.max,
       alignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        isChanged
+        widget.model.isBankChanged
             ? Container(
                 child: RaisedButton(
                   elevation: 11,
@@ -441,7 +331,12 @@ class _ProfileFormState extends State<ProfileForm> {
                   child: Icon(Icons.check_circle),
                   color: Colors.green[700],
                   onPressed: () async {
-                    String _msg = await _saveNodeEdit(_memberEditData);
+                    _memberEditData.bankId = widget.model.nodeEditData.bankId;
+                    String _msg = '';
+                    _msg =
+                        _validPhotoInput(_memberEditData, widget.model.userInfo)
+                            ? await _saveNodeEdit(_memberEditData)
+                            : _msg = 'Please Add TaxId Photo';
                     showDialog(
                         context: context,
                         builder: (_) => AlertDialog(
@@ -477,17 +372,19 @@ class _ProfileFormState extends State<ProfileForm> {
   Future<String> _saveNodeEdit(NewMember memberEditData) async {
     isloading(true);
     String msg;
+
     print(memberEditData.editMemberEncode(memberEditData));
+
     Response response = await memberEditData.editPost(
         memberEditData, widget.model.settings.apiUrl);
     if (response.statusCode == 200) {
-      //2033243 resetVeri();
+      //2033243 reset_veri();
     }
     response.statusCode == 200 ? msg = 'Updated :)' : msg = 'Failed';
     print(response.statusCode);
     isloading(false);
     setState(() {
-      isChanged = false;
+      widget.model.isBankChanged = false;
     });
     return msg;
   }

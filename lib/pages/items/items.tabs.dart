@@ -37,7 +37,7 @@ class ItemsTabs extends StatelessWidget {
             ),
             ListTile(
                 leading: Icon(Icons.person),
-                title: Text('Profile'),
+                title: Text('Profil'),
                 onTap: () {
                   //print(model.settings.pdfUrl);
 
@@ -59,7 +59,7 @@ class ItemsTabs extends StatelessWidget {
                 }),
             ListTile(
                 leading: Icon(Icons.video_collection),
-                title: Text('videos'),
+                title: Text('Videos'),
                 onTap: () {
                   //print(model.settings.pdfUrl);
 

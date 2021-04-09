@@ -46,7 +46,7 @@ class _RegistrationPage extends State<RegistrationPage> {
     });
   }
 
-//!legacy distrid check for exists
+//*legacy distrid check for exists
   bool _legacyDataExits;
   bool legacyDataExists(User user) {
     if (user == null) {
@@ -65,7 +65,8 @@ class _RegistrationPage extends State<RegistrationPage> {
     });
   }
 
-//!firebase distrid check for exists
+//*firebase distrid check for exists
+
   bool _fireDataExits;
   bool fireDataExists(User user) {
     if (user != null) return _fireDataExits = true;
@@ -82,7 +83,7 @@ class _RegistrationPage extends State<RegistrationPage> {
     fireDataExists(user);
   }
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//**
   bool validateAndSave() {
     final form = _registrationFormKey.currentState;
     isloading(true);
@@ -100,7 +101,7 @@ class _RegistrationPage extends State<RegistrationPage> {
     if (_registrationFormData['userId'] == _legacyData.distrId &&
         _registrationFormData['personalId'] ==
             _legacyData.distrIdent
-                .substring(_legacyData.distrIdent.length - 0)) {
+                .substring(_legacyData.distrIdent.length - 6)) {
       print('regcheck:OK');
       return true;
     } else

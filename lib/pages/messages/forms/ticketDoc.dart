@@ -459,12 +459,12 @@ class _DocFormState extends State<DocForm> {
     List<dynamic> docList;
     dynamic response;
     if (docProblem == 'm' || docProblem == 'd') {
-      response = await http
-          .get('http://34.101.79.170:5000/api/missingordamageditems/$distrId');
+      response = await http.get(
+          'https://mywayindoapi.azurewebsites.net/api/missingordamageditems/$distrId');
       print('running Missing or damaged invoice: $docProblem');
     } else {
-      response = await http
-          .get('http://34.101.79.170:5000/api/getlateinvoices/$distrId');
+      response = await http.get(
+          'https://mywayindoapi.azurewebsites.net/api/getlateinvoices/$distrId');
       print('running late invoice: $docProblem');
     }
     if (response.statusCode == 200) {
@@ -484,8 +484,8 @@ class _DocFormState extends State<DocForm> {
     List<dynamic> itemsList;
     dynamic response;
 
-    response = await http
-        .get('http://34.101.79.170:5000/api/getinvoicedetails/$docId');
+    response = await http.get(
+        'https://mywayindoapi.azurewebsites.net/api/getinvoicedetails/$docId');
 
     if (response.statusCode == 200) {
       itemsList = json.decode(response.body) as List;

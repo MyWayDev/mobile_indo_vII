@@ -25,15 +25,17 @@ import 'package:firebase_core/firebase_core.dart';
 class MainModel extends Model {
   // ** items //** */
   static String _version = '3.23r'; //!Modify for every release version./.
-  static String firebaseDb = "indoProduction"; //!modify back to indoProduction;
+  static String firebaseDb = "indoProduction";
   static String stage = "indoProduction";
   static String updateDb = "indoProduction";
   final FirebaseDatabase database = FirebaseDatabase.instance;
   DatabaseReference databaseReference;
   final String pathDB = "indoDb/";
   final String path = 'flamelink/environments/$firebaseDb/content';
-  final String httpath = 'https://indo-api-core.azurewebsites.net';
+  final String httpath = 'https://mywayindoapi.azurewebsites.net';
   //!production azure'https://mywayindoapi.azurewebsites.net/api'//
+  AreaPlace areaDropDownValue;
+  Bank bankDropDownValue;
   String shipmentName = '';
   String shipmentArea = '';
   String shipmentAddress = '';
@@ -58,6 +60,7 @@ class MainModel extends Model {
   bool bulkLoading = false;
   bool isBalanceChecked = true;
   bool isTypeing = false;
+  bool isBankChanged = false;
   final List<Item> _recoImage = List();
   double newRegcourierFee = 0.0;
 
@@ -188,7 +191,6 @@ class MainModel extends Model {
         break;
       }
     }
-
     return found;
   }
 
@@ -417,8 +419,8 @@ class MainModel extends Model {
   Future<List<Item>> dbItemsList() async {
     List<Item> products;
     //List productlist;
-    final response =
-        await http.get('http://34.101.79.170:5000/api/allitemdetails');
+    final response = await http
+        .get('https://mywayindoapi.azurewebsites.net/api/allitemdetails');
     if (response.statusCode == 200) {
       final productlist = json.decode(response.body) as List;
 
@@ -508,8 +510,8 @@ class MainModel extends Model {
 //String img = await spaceRef;
 
     List<Item> items;
-    final response =
-        await http.get('http://34.101.79.170:5000/api/allitemdetails');
+    final response = await http
+        .get('https://mywayindoapi.azurewebsites.net/api/allitemdetails');
     if (response.statusCode == 200) {
       List<dynamic> itemlist = json.decode(response.body);
       items = itemlist.map((i) => Item.fromJson(i)).toList();
@@ -2438,6 +2440,10 @@ for( var i = 0 ; i < _list.length; i++){
 
   Future<String> loggedUser() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    return user.email;
+    var _email = '';
+    if (user.email == null) {
+      return _email;
+    } else
+      return user.email;
   }
 }

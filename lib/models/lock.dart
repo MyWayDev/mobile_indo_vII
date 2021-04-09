@@ -49,5 +49,6 @@ class Lock {
         flush = snapshot.value['flush'],
         sKitWeight = snapshot.value['sKitWeight' ?? 1.0],
         bankInfo = snapshot.value['bankInfo'] ?? '',
-        apiUrl = snapshot.value['apiUrl' ?? 'http://34.101.79.170:5000/api'];
+        apiUrl = snapshot
+            .value['apiUrl' ?? 'https://mywayindoapi.azurewebsites.net/api'];
 }

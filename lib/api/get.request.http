@@ -1,0 +1,134 @@
+
+@hostname = mywayindoapi.azurewebsites.net
+###classic-indo-api.azurewebsites.net
+### mywayindoapi.azurewebsites.net
+@port = 5000
+@param = api
+@host = {{hostname}}/{{param}}
+@format = json
+@type = application
+@contentType = {{type}}/{{format}}
+
+
+###
+@var = 02000028
+###
+
+GET https://{{host}}/deserve_bonus/{{var}}
+
+###
+
+GET  http:s//{{host}}/bonus_history/{{var}}
+
+###
+GET  http:s//{{host}}/areas
+
+###
+GET http:s//{{host}}/stock/1161/02
+###
+GET https://{{host}}/itemdetails/8332
+###
+
+GET  https://{{host}}/api/areaid/152
+
+###
+GET https://{{host}}/get_all_shipment_places/
+###
+GET https://{{host}}/get_bank_info
+###
+POST  https://{{host}}/edit_distr/ HTTP/1.1
+Content-Type: application/json
+
+{   
+//GET MEMBER API MAPPING => POST EDIT MEMBER API
+//////////////////////////////////////////////////
+    //"AREA_ID": "24",// NO NEED
+    //"AREA_NAME": "Kalimantan Selatan",//NO NEED
+    //"ACCOUNT_NUM": "048023071",//SM_ID AZA
+    //"ACCOUNT_OWNER": "BCA BANK",//NOTES AZ1
+    //"TAX_NUM": "", //AP_AC_ID AZ1
+//////////////////////////////////////////////////
+    "DISTR_ID": "02018582",
+    "SERVICE_CENTER": "02",
+    "LNAME": "Ibu umi chasanah",
+    "TELEPHONE": "083849601460",
+    "DISTR_IDENT": "3504014311830006",
+    "BIRTH_DATE": "1974-07-31",
+    "SM_ID": "048023071",// BANK ACCOUNT_NUM
+    "ADDRESS": "JL.DR.SOETOMO 2 
+                NO16BRT/RW.001/003,KEL TRETEK,
+                KEC TULUNGAGUNG,
+                KAB TULUNGAGUNG-JAWA TIMUR",
+    "HOLD_CRE": "0",
+    "AP_AC_ID": "",// TAX
+    "NOTES": "BCA BANK",// BANK NAME
+    "E_MAIL": "",
+    "BANK_AC_LNAME":"umi",
+    "DS_BANK":"00000002"
+}
+###
+POST  https://{{host}}/memregister_updated/ HTTP/1.1
+Content-Type: application/json
+{   
+/	"SERVICE_CENTER": "02",
+	"SPONSOR_ID": "00000001",
+	"FAMILY_LNAME": "Ayman",
+	"LNAME": "Abdelrahman",
+	"DISTR_IDENT": "452845284652",
+	"BIRTH_DATE": "1994-01-01",
+	"E_MAIL": "test@email.co",
+	"TELEPHONE": "+20123456",
+	"ADDRESS": "12 indo test street",
+	"AREA_ID": "02",
+	"NOTES": "{STRING:BANK ACCOUNT OWNER}",
+	"SM_ID": "{STRING: BANK ACCOUNT NUMBER}",
+	"AP_AC_ID": "{STRING: TAX NUMBER}",
+	"RATE": 35532.02,
+	"DS_SHIPMENT_COMP":"1000001",
+	"DS_BANK":"{string from dsbk table or the bank info api method}"
+}
+###
+
+  
+
+  {
+/*
+    "DISTR_ID": "02018582",
+    "LNAME": "Ibu umi chasanah",
+    "DISTR_IDENT": "3504014311830006",
+    "ADDRESS": "JL.DR. SOETOMO 2 NO 16B RT/RW : 001/003 , KEL : TRETEK,KEC: TULUNGAGUNG , KAB :TULUNGAGUNG - JAWA TIMUR",
+    "TELEPHONE": "083849601460",
+    "E_MAIL": "",
+    "AREA_ID": "24",
+    "BIRTH_DATE": "1974-07-31",
+    "AREA_NAME": "Kalimantan Selatan",
+    "ACCOUNT_NUM": "048023071",
+    "ACCOUNT_OWNER": "BCA BANK",
+    "TAX_NUM": "",
+    "SERVICE_CENTER": "02",
+    "HOLD_CRE": "0",
+    "BANK_AC_LNAME":"umi chasanah",
+    "DS_BANK": "00000002"
+*/
+  }
+
+###
+POST https://mywayindoapi.azurewebsites.net/api/token HTTP/1.1
+Content-Type: application/json
+{
+        "userName" : "admin",
+        "password": "Pa$$w0rd@852258855"
+}
+
+###
+POST https://jsonplaceholder.typicode.com/posts HTTP/1.1
+Content-Type: application/json
+
+{
+        "userName" : "admin",
+        "body": "Pa$$w0rd@852258855"
+}
+
+###
+
+

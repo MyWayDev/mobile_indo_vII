@@ -53,6 +53,7 @@ class _DetailsReport extends State<DetailsReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
+
       //drawer: Container(),
       floatingActionButton: FloatingActionButton(
         elevation: 21.5,

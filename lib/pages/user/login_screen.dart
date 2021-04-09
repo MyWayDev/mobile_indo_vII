@@ -20,6 +20,14 @@ class LoginScreen extends StatefulWidget {
 @override
 class _LoginScreen extends State<LoginScreen> {
   final GlobalKey<FormState> _userFormKey = GlobalKey<FormState>();
+  bool _obscureText = true;
+
+  // Toggles the password show status
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   final Map<String, dynamic> _userFormData = {
     'id': null,
@@ -209,13 +217,13 @@ class _LoginScreen extends State<LoginScreen> {
                         child: TextFormField(
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Password',
+                            hintText: 'Kata Sandi',
                             hintStyle: TextStyle(color: Colors.grey[400]),
                           ),
                           // autovalidate: true,
                           // initialValue: 'sjmma225',
                           controller: loginController,
-                          obscureText: true,
+                          obscureText: _obscureText,
                           validator: (value) {
                             String _msg;
                             if (value.isEmpty) {
@@ -230,7 +238,15 @@ class _LoginScreen extends State<LoginScreen> {
                             _userFormData['password'] = value;
                           },
                         ),
-                      )
+                      ),
+                      IconButton(
+                          onPressed: _toggle,
+                          icon: Icon(
+                              !_obscureText
+                                  ? GroovinMaterialIcons.eye
+                                  : GroovinMaterialIcons.eye_off,
+                              color: Colors.grey[400],
+                              size: 21))
                     ],
                   ),
                 ),

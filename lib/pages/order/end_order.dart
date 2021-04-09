@@ -176,6 +176,7 @@ class _EndOrder extends State<EndOrder> with SingleTickerProviderStateMixin {
       settings(model);
 
       return Scaffold(
+          resizeToAvoidBottomInset: false,
           resizeToAvoidBottomPadding: false,
           appBar: AppBar(
             title: Column(

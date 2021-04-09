@@ -104,8 +104,8 @@ class _NewMemberPage extends State<NewMemberPage> {
   List<AreaPlace> areaPlace;
   void getPlaces() async {
     areaPlace = [];
-    final response = await http
-        .get('http://34.101.79.170:5000/api/get_all_shipment_places/');
+    final response = await http.get(
+        'https://mywayindoapi.azurewebsites.net/api/get_all_shipment_places/');
     if (response.statusCode == 200) {
       final _shipmentArea = json.decode(response.body) as List;
       areaPlace = _shipmentArea.map((s) => AreaPlace.json(s)).toList();
@@ -435,7 +435,6 @@ class _NewMemberPage extends State<NewMemberPage> {
                                                                           PaymentInfo(model)
                                                                               .flushAction(context)
                                                                               .show(context);
-                                                                          ;
                                                                         }
 
                                                                         //  s

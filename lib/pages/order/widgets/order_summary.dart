@@ -39,7 +39,7 @@ class OrderSummary extends StatelessWidget {
                                 height: 27,
                                 child: ListTile(
                                   title: Text(
-                                    'Total Weight',
+                                    'Berat Total',
                                     style: TextStyle(fontSize: 14),
                                     // textDirection: TextDirection.rtl,
                                   ),
@@ -190,7 +190,7 @@ class OrderSummary extends StatelessWidget {
                                 height: 27,
                                 child: ListTile(
                                   title: Text(
-                                    'Total Weight',
+                                    'Berat Total',
                                     style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold),

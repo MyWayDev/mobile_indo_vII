@@ -31,7 +31,7 @@ class _TrackInvoice extends State<TrackInvoice> {
   void _getInvoices(String userId) async {
     firstInvoice = [];
     final http.Response response = await http.get(
-        'http://34.101.79.170:5000/api/userinvoices/$userId'); // sample distrid =>$userId
+        'https://mywayindoapi.azurewebsites.net/api/userinvoices/$userId'); // sample distrid =>$userId
     if (response.statusCode == 200 && firstInvoice.length == 0) {
       print('getInvoice ok');
       List<dynamic> invoiceList = json.decode(response.body);
@@ -243,7 +243,7 @@ class _TrackInvoice extends State<TrackInvoice> {
     firstInvoice.clear();
 
     final http.Response responseII = await http.post(
-        'http://34.101.79.170:5000/api/updatedoneinv/$docId/$distrId/$storeId/$flagType');
+        'https://mywayindoapi.azurewebsites.net/api/updatedoneinv/$docId/$distrId/$storeId/$flagType');
     if (responseII.statusCode == 200) {
       _getInvoices(widget.userId);
       isLoading(false, model);

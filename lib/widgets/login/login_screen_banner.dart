@@ -10,7 +10,7 @@ class LoginBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainModel>(
         builder: (BuildContext context, Widget child, MainModel model) {
-      return new ClipPath(
+      return ClipPath(
         clipper: MyClipper(),
         child: Container(
           decoration: BoxDecoration(

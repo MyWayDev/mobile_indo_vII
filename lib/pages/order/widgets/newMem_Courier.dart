@@ -61,7 +61,7 @@ class _NewMemberCourierState extends State<NewMemberCourier> {
         progressIndicator: LinearProgressIndicator(),
         child: AlertDialog(
             title: Text(
-              "New Member Shipping / Fees",
+              "Biaya Kirim Starter Kit",
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             ),
             content: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -140,7 +140,7 @@ class _NewMemberCourierState extends State<NewMemberCourier> {
                           height: 27,
                           child: ListTile(
                             title: Text(
-                              'Courier Fee',
+                              'Biaya Kurir',
                               style: TextStyle(
                                   fontSize: 12, fontWeight: FontWeight.bold),
                               // textDirection: TextDirection.rtl,
@@ -161,7 +161,7 @@ class _NewMemberCourierState extends State<NewMemberCourier> {
                           height: 27,
                           child: ListTile(
                             title: Text(
-                              'Membership Fee',
+                              'Biaya Keanggotaan',
                               style: TextStyle(
                                   fontSize: 12, fontWeight: FontWeight.bold),
                             ),

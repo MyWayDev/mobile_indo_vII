@@ -1,24 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:mor_release/models/area.dart';
-import 'package:mor_release/models/courier.dart';
 import 'package:mor_release/models/user.dart';
-import 'package:mor_release/pages/order/widgets/payment.dart';
+import 'package:mor_release/pages/order/widgets/areaDropdown.dart';
 import 'package:mor_release/pages/order/widgets/shipmentArea.dart';
 import 'package:mor_release/pages/order/widgets/storeFloat.dart';
+import 'package:mor_release/pages/profile/bankDropdown.dart';
 import 'package:mor_release/scoped/connected.dart';
 import 'package:mor_release/widgets/color_loader_2.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
-import 'package:http/http.dart' as http;
 import 'package:mor_release/pages/profile/album.dart';
 import 'package:intl/intl.dart';
-import 'package:searchable_dropdown/searchable_dropdown.dart';
 
 class NewReg extends StatefulWidget {
   final MainModel model;
@@ -34,73 +31,79 @@ class NewReg extends StatefulWidget {
 //final FirebaseDatabase dataBase = FirebaseDatabase.instance;
 @override
 class _NewReg extends State<NewReg> {
+  final String path = 'flamelink/environments/indoStage/content/region/en-US/';
+  final FirebaseDatabase database = FirebaseDatabase.instance;
+  final TextEditingController controller = new TextEditingController();
+  final _newMemberFormKey = GlobalKey<FormState>();
+  final doubleFormat = new NumberFormat("####.##");
+  final formatter = new NumberFormat("#,###");
+
+  final NewMember _newMemberForm = NewMember(
+    serviceCenter: null,
+    sponsorId: null, //* Form value
+    familyName: null, //* empty
+    name: null, //*Form value
+    personalId: null, //*Form value
+    birthDate: '', //*Form value
+    email: '', //*Form value
+    telephone: null, //*Form value
+    address: null, //*Form value
+    areaId: '', //*Form value
+    bankAccoutName: null, //*Form value
+    bankAccountNumber: null, //*Form value
+    taxNumber: null, //*Form value
+    bankId: null, //*Form value
+    rate: 0, //*CR DOCS POPUP value
+    shipmentCompany: '', //*CR DOCS POPUP value
+  );
+
+  AutovalidateMode _autoValidateMode;
+
   DateTime selected;
-  String path = 'flamelink/environments/indoStage/content/region/en-US/';
-  FirebaseDatabase database = FirebaseDatabase.instance;
-  TextEditingController controller = new TextEditingController();
-
-  final GlobalKey<FormState> _newMemberFormKey = GlobalKey<FormState>();
-  List<Bank> banks;
-  List<DropdownMenuItem> bankList = [];
-  String bankName = '';
-  String selectedBank;
-  var bankSplit;
-  List<DropdownMenuItem> items = [];
-  List<DropdownMenuItem> places = [];
-  String selectedValue;
-  String placeValue;
-  var areaSplit;
-  var placeSplit;
-  List<Courier> couriers = [];
+  User _nodeData;
   bool _loading = false;
-
-  void getBanks() async {
-    banks = [];
-    final response =
-        await http.get('${widget.model.settings.apiUrl}/get_bank_info/');
-
-    if (response.statusCode == 200) {
-      final _banks = json.decode(response.body) as List;
-      banks = _banks.map((s) => Bank.json(s)).toList();
-      //areaPlace.forEach((a) => print(a.spName));
-    } else {
-      banks = [];
-    }
-
-    if (banks.isNotEmpty) {
-      for (var t in banks) {
-        String sValue = "${t.bankId}" + " " + "${t.bankName}";
-        bankList.add(
-          DropdownMenuItem(
-              child: Center(
-                child: Text(
-                  sValue,
-                  style: TextStyle(fontSize: 12),
-                ),
-              ),
-              value: sValue),
-        );
-      }
-      bankName = 'Philih Nama Bank';
-    }
-  }
+  bool validData = false;
+  bool veri = false;
+  bool _isloading = false;
 
   @override
   void initState() {
-    getPlaces();
-    getBanks();
-    //  getAreas();
-    controller.addListener(() {
-      setState(() {});
-    });
+    _autoValidateMode = AutovalidateMode.onUserInteraction;
+    widget.model.areaDropDownValue =
+        AreaPlace(areaId: '', areaName: '', shipmentPlace: '', spName: '');
+    widget.model.bankDropDownValue = Bank(bankId: '', bankName: '');
     super.initState();
   }
 
   @override
   void dispose() {
     widget.model.newRegcourierFee = 0;
+    widget.model.areaDropDownValue =
+        AreaPlace(areaId: '', areaName: '', shipmentPlace: '');
+    widget.model.bankDropDownValue = Bank(bankId: '', bankName: '');
+
+    if (_newMemberFormKey.currentState != null)
+      _newMemberFormKey.currentState.reset();
     controller.dispose();
     super.dispose();
+  }
+
+  isloading(bool i) {
+    if (mounted) {
+      setState(() {
+        _isloading = i;
+      });
+    }
+  }
+
+  resetVeri() {
+    controller.clear();
+    if (mounted) {
+      setState(() {
+        veri = false;
+        _isloading = false;
+      });
+    }
   }
 
   _showDateTimePicker(String userId) async {
@@ -110,110 +113,12 @@ class _NewReg extends State<NewReg> {
         firstDate: DateTime(1900),
         lastDate: DateTime(2050));
     // locale: Locale('fr'));
-    setState(() {});
-  }
-
-  //final model = MainModel();
-  void getAreas() async {
-    DataSnapshot snapshot = await database.reference().child(path).once();
-
-    Map<dynamic, dynamic> _areas = snapshot.value;
-    List list = _areas.values.toList();
-    List<Region> fbRegion = list.map((f) => Region.json(f)).toList();
-
-    if (snapshot.value != null) {
-      for (var t in fbRegion) {
-        String sValue = "${t.regionId}" + " " + "${t.name}";
-        items.add(
-          DropdownMenuItem(
-              child: Text(
-                sValue,
-                style: TextStyle(fontSize: 11),
-              ),
-              value: sValue),
-        );
-      }
+    if (mounted) {
+      setState(() {});
     }
   }
 
-  AreaPlace getplace(String id) {
-    AreaPlace place;
-    place = areaPlace.firstWhere((p) => p.shipmentPlace == id);
-    print(
-        'shipmentPlace:${place.shipmentPlace}:spName${place.spName}:areaId:${place.areaId}');
-    return place;
-  }
-
-  List<AreaPlace> areaPlace;
-  void getPlaces() async {
-    areaPlace = [];
-    final response = await http
-        .get('${widget.model.settings.apiUrl}/get_all_shipment_places/');
-    if (response.statusCode == 200) {
-      final _shipmentArea = json.decode(response.body) as List;
-      areaPlace = _shipmentArea.map((s) => AreaPlace.json(s)).toList();
-      //areaPlace.forEach((a) => print(a.spName));
-    } else {
-      areaPlace = [];
-    }
-
-    if (areaPlace.isNotEmpty) {
-      for (var t in areaPlace) {
-        String sValue = "${t.shipmentPlace}" + " " + "${t.spName}";
-        places.add(
-          DropdownMenuItem(
-              child: Text(
-                sValue,
-                style: TextStyle(fontSize: 12),
-              ),
-              value: sValue),
-        );
-      }
-    }
-  }
-
-  final NewMember _newMemberForm = NewMember(
-    serviceCenter: null,
-    sponsorId: null, //* Form value
-    familyName: null, //* empty
-    name: null, //*Form value
-    personalId: null, //*Form value
-    birthDate: null, //*Form value
-    email: null, //*Form value
-    telephone: null, //*Form value
-    address: null, //*Form value
-    areaId: null, //*Form value
-    bankAccoutName: null, //*Form value
-    bankAccountNumber: null, //*Form value
-    taxNumber: null, //*Form value
-    bankId: null, //*Form value
-    rate: 0, //*CR DOCS POPUP value
-    shipmentCompany: null, //*CR DOCS POPUP value
-  );
-
-  Area stateValue;
-
-  bool _isloading = false;
-
-  void isloading(bool i) {
-    setState(() {
-      _isloading = i;
-    });
-  }
-
-  bool veri = false;
-  //int _courier;
-  User _nodeData;
-
-  void resetVeri() {
-    controller.clear();
-    setState(() {
-      veri = false;
-      _isloading = false;
-    });
-  }
-
-  void _profileAlbumBottomSheet(context, MainModel model) {
+  _profileAlbumBottomSheet(context, MainModel model) {
     showModalBottomSheet(
         isScrollControlled: true,
         barrierColor: Colors.white70,
@@ -230,32 +135,26 @@ class _NewReg extends State<NewReg> {
         });
   }
 
-  final doubleFormat = new NumberFormat("####.##");
-  final formatter = new NumberFormat("#,###");
-  bool validData;
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   bool validateAndSave(String userId, String sc) {
-    final form = _newMemberFormKey.currentState;
+    //final form = _newMemberFormKey.currentState;
     isloading(true);
-    if (form.validate() && selected != null && placeSplit.first != null) {
-      _newMemberForm.birthDate =
-          DateFormat('yyyy-MM-dd').format(selected).toString();
-      _newMemberForm.email = userId;
-      _newMemberForm.areaId = getplace(placeSplit.first).areaId;
-      _newMemberForm.serviceCenter = sc;
+    _newMemberForm.birthDate =
+        DateFormat('yyyy-MM-dd').format(selected).toString();
+    _newMemberForm.email = userId;
+    _newMemberForm.areaId = 'getplace(placeSplit.first).areaId';
+    _newMemberForm.serviceCenter = sc;
+    if (mounted) {
       setState(() {
-        validData = true;
+        validData = _newMemberFormKey.currentState.validate();
       });
-      // isloading(true);
-      print('valide entry $validData');
-      _newMemberFormKey.currentState.save();
-
-      print('${_newMemberForm.sponsorId}:${_newMemberForm.birthDate}');
-      isloading(false);
-      return true;
     }
+    // isloading(true);
+    print('valide entry $validData');
+    _newMemberFormKey.currentState.save();
+
+    print('${_newMemberForm.sponsorId}:${_newMemberForm.birthDate}');
     isloading(false);
-    return false;
+    return true;
   }
 
   @override
@@ -318,6 +217,7 @@ class _NewReg extends State<NewReg> {
               : null,
           body: Container(
             child: Form(
+              autovalidateMode: AutovalidateMode.disabled,
               key: _newMemberFormKey,
               child: ListView(
                 children: <Widget>[
@@ -422,8 +322,7 @@ class _NewReg extends State<NewReg> {
                                                       flex: 1,
                                                       child: TextFormField(
                                                         autovalidateMode:
-                                                            AutovalidateMode
-                                                                .onUserInteraction,
+                                                            _autoValidateMode,
                                                         decoration: InputDecoration(
                                                             labelStyle:
                                                                 TextStyle(
@@ -440,12 +339,11 @@ class _NewReg extends State<NewReg> {
                                                                     Colors.pink[
                                                                         500])),
                                                         validator: (value) {
-                                                          String _msg;
-                                                          value.length < 6
-                                                              ? _msg =
-                                                                  'Nama anggota tidak valid'
-                                                              : _msg = null;
-                                                          return _msg;
+                                                          if (value.length <
+                                                              6) {
+                                                            return 'Nama anggota tidak valid';
+                                                          } else
+                                                            return null;
                                                         },
                                                         keyboardType:
                                                             TextInputType.text,
@@ -457,49 +355,53 @@ class _NewReg extends State<NewReg> {
                                                       ),
                                                     ),
                                                     Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                left: 25,
-                                                                right: 25),
-                                                        child: Column(
-                                                          children: [
-                                                            Padding(
-                                                              padding: EdgeInsets
-                                                                  .only(
-                                                                      right: 1),
-                                                              child: selected ==
-                                                                      null
-                                                                  ? Text(
-                                                                      'Tanggal lahir')
-                                                                  : Text(''),
+                                                      padding: EdgeInsets.only(
+                                                          top: 16,
+                                                          left: 13,
+                                                          right: 13),
+                                                      child: Column(
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    right: 1),
+                                                            child:
+                                                                selected == null
+                                                                    ? Text(
+                                                                        'Tanggal lahir',
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                13,
+                                                                            color:
+                                                                                Colors.grey[700]),
+                                                                      )
+                                                                    : Text(''),
+                                                          ),
+                                                          RawMaterialButton(
+                                                            child: Icon(
+                                                              GroovinMaterialIcons
+                                                                  .calendar_check,
+                                                              size: 24.0,
+                                                              color:
+                                                                  Colors.white,
                                                             ),
-                                                            RawMaterialButton(
-                                                              child: Icon(
-                                                                GroovinMaterialIcons
-                                                                    .calendar_check,
-                                                                size: 24.0,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                              shape:
-                                                                  CircleBorder(),
-                                                              highlightColor:
-                                                                  Colors.pink[
-                                                                      500],
-                                                              elevation: 8,
-                                                              fillColor: Colors
-                                                                  .pink[500],
-                                                              onPressed: () {
-                                                                _showDateTimePicker(
-                                                                    model
-                                                                        .userInfo
-                                                                        .distrId);
-                                                              },
-                                                              splashColor:
-                                                                  Colors.pink[
-                                                                      900],
-                                                            ),
-                                                            Padding(
+                                                            shape:
+                                                                CircleBorder(),
+                                                            highlightColor:
+                                                                Colors
+                                                                    .pink[500],
+                                                            elevation: 8,
+                                                            fillColor: Colors
+                                                                .pink[500],
+                                                            onPressed: () {
+                                                              _showDateTimePicker(
+                                                                  model.userInfo
+                                                                      .distrId);
+                                                            },
+                                                            splashColor: Colors
+                                                                .pink[900],
+                                                          ),
+                                                          Padding(
                                                               padding: EdgeInsets
                                                                   .only(top: 2),
                                                               child: selected !=
@@ -509,10 +411,36 @@ class _NewReg extends State<NewReg> {
                                                                       .format(
                                                                           selected)
                                                                       .toString())
-                                                                  : Text(''),
-                                                            ),
-                                                          ],
-                                                        )),
+                                                                  : Center(
+                                                                      child:
+                                                                          Container(
+                                                                        height:
+                                                                            22,
+                                                                        width:
+                                                                            138,
+                                                                        child: TextFormField(
+                                                                            decoration: InputDecoration(
+                                                                              border: InputBorder.none,
+                                                                            ),
+                                                                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                                                                            validator: (value) {
+                                                                              value = '';
+                                                                              /*selected ==
+                                                                              null
+                                                                          ? selected
+                                                                              .toString()
+                                                                          : '';*/
+
+                                                                              if (value.isEmpty || value == '') {
+                                                                                return 'silahkan pilih birth Date';
+                                                                              } else
+                                                                                return null;
+                                                                            }),
+                                                                      ),
+                                                                    )),
+                                                        ],
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
                                                 Wrap(
@@ -526,8 +454,7 @@ class _NewReg extends State<NewReg> {
                                                             style: TextStyle(
                                                                 fontSize: 13.5),
                                                             autovalidateMode:
-                                                                AutovalidateMode
-                                                                    .onUserInteraction,
+                                                                _autoValidateMode,
                                                             decoration: InputDecoration(
                                                                 labelStyle:
                                                                     TextStyle(
@@ -535,6 +462,9 @@ class _NewReg extends State<NewReg> {
                                                                             13),
                                                                 labelText:
                                                                     'Nomor tanda pengenal',
+                                                                filled: true,
+                                                                fillColor: Colors
+                                                                    .transparent,
                                                                 contentPadding:
                                                                     EdgeInsets
                                                                         .all(
@@ -546,20 +476,17 @@ class _NewReg extends State<NewReg> {
                                                                             .pink[
                                                                         500])),
                                                             validator: (value) {
-                                                              String _msg;
-                                                              value.length <= 16
-                                                                  ? _msg =
-                                                                      'error !'
-                                                                  : _msg = null;
-                                                              return _msg;
+                                                              if (value.length <
+                                                                      16 ||
+                                                                  value.length >
+                                                                      16) {
+                                                                return 'masukkan 16 angka';
+                                                              } else
+                                                                return null;
                                                             },
-                                                            autocorrect: true,
-                                                            textCapitalization:
-                                                                TextCapitalization
-                                                                    .sentences,
                                                             keyboardType:
                                                                 TextInputType
-                                                                    .text,
+                                                                    .number,
                                                             onSaved:
                                                                 (String value) {
                                                               _newMemberForm
@@ -574,8 +501,7 @@ class _NewReg extends State<NewReg> {
                                                             style: TextStyle(
                                                                 fontSize: 13.5),
                                                             autovalidateMode:
-                                                                AutovalidateMode
-                                                                    .onUserInteraction,
+                                                                _autoValidateMode,
                                                             decoration:
                                                                 InputDecoration(
                                                                     labelStyle: TextStyle(
@@ -599,12 +525,11 @@ class _NewReg extends State<NewReg> {
                                                                           500],
                                                                     )),
                                                             validator: (value) {
-                                                              String _msg;
-                                                              value.length < 8
-                                                                  ? _msg =
-                                                                      ' خطأ فى حفظ  الهاتف'
-                                                                  : _msg = null;
-                                                              return _msg;
+                                                              if (value.length <
+                                                                  10) {
+                                                                return 'minimal 10 angka';
+                                                              } else
+                                                                return null;
                                                             },
                                                             keyboardType:
                                                                 TextInputType
@@ -623,16 +548,14 @@ class _NewReg extends State<NewReg> {
                                                     ),
                                                     Row(
                                                       children: [
-                                                        Flexible(
-                                                          flex: 1,
-                                                          fit: FlexFit.tight,
+                                                        Container(
+                                                          width: 212,
                                                           child: TextFormField(
                                                             style: TextStyle(
                                                                 fontSize: 13.5),
                                                             autovalidateMode:
-                                                                AutovalidateMode
-                                                                    .onUserInteraction,
-                                                            maxLines: 6,
+                                                                _autoValidateMode,
+                                                            maxLines: 7,
                                                             decoration:
                                                                 InputDecoration(
                                                                     labelStyle: TextStyle(
@@ -656,16 +579,15 @@ class _NewReg extends State<NewReg> {
                                                                           500],
                                                                     )),
                                                             validator: (value) {
-                                                              String _msg;
-                                                              value.length < 9
-                                                                  ? _msg =
-                                                                      'Error'
-                                                                  : _msg = null;
-                                                              return _msg;
+                                                              if (value.length <
+                                                                  9) {
+                                                                return 'tulis alamat lengkap';
+                                                              } else
+                                                                return null;
                                                             },
                                                             keyboardType:
                                                                 TextInputType
-                                                                    .text,
+                                                                    .streetAddress,
                                                             onSaved:
                                                                 (String value) {
                                                               _newMemberForm
@@ -674,143 +596,54 @@ class _NewReg extends State<NewReg> {
                                                             },
                                                           ),
                                                         ),
-                                                        Container(
-                                                          width: 126,
-                                                          child: Row(children: <
-                                                              Widget>[
-                                                            Container(
-                                                              width: 32,
-                                                              child: Icon(
-                                                                  Icons
-                                                                      .add_location,
-                                                                  color: Colors
-                                                                          .pink[
-                                                                      500]),
-                                                            ),
-                                                            Flexible(
-                                                                fit: FlexFit
-                                                                    .tight,
-                                                                child:
-                                                                    SearchableDropdown(
-                                                                  underline:
-                                                                      Divider(
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                  ),
-                                                                  isExpanded:
-                                                                      true,
-                                                                  //style: TextStyle(fontSize: 12),
-                                                                  hint: Text(
-                                                                    'Area',
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                  iconEnabledColor:
-                                                                      Colors.pink[
-                                                                          200],
-                                                                  iconDisabledColor:
-                                                                      Colors
-                                                                          .grey,
-                                                                  items: places,
-                                                                  value:
-                                                                      selectedValue,
-                                                                  onChanged:
-                                                                      (value) {
-                                                                    setState(
-                                                                        () {
-                                                                      selectedValue =
-                                                                          value;
-                                                                      placeSplit =
-                                                                          selectedValue
-                                                                              .split('\ ');
-                                                                    });
-                                                                  },
-                                                                ))
-                                                          ]), /* Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: <Widget>[
-                                                SearchableDropdown(
-                                                  hint: Text('region'),
-                                                  icon: Icon(
-                                                    Icons
-                                                        .arrow_drop_down_circle,
-                                                    size: 28,
-                                                  ),
-                                                  iconEnabledColor:
-                                                      Colors.pink[200],
-                                                  iconDisabledColor:
-                                                      Colors.grey,
-                                                  items: items,
-                                                  value: selectedValue,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      selectedValue = value;
-                                                      areaSplit = selectedValue
-                                                          .split('\ ');
-                                                      _newMemberForm.areaId =
-                                                          areaSplit.first;
+                                                        Icon(Icons.location_on,
+                                                            color: Colors
+                                                                .pink[500],
+                                                            size: 22),
+                                                        Expanded(
+                                                          child: Wrap(
+                                                            children: [
+                                                              AreaDropdown(
+                                                                model,
+                                                                isInsert: true,
+                                                              ),
+                                                              Container(
+                                                                  height: 22,
+                                                                  child: TextFormField(
+                                                                      decoration: InputDecoration(
+                                                                        border:
+                                                                            InputBorder.none,
+                                                                      ),
+                                                                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                                                                      validator: (value) {
+                                                                        value = widget
+                                                                            .model
+                                                                            .areaDropDownValue
+                                                                            .shipmentPlace;
 
-                                                      print(
-                                                          'split:${_newMemberForm.areaId}');
-                                                    });
-                                                  },
-                                                ),
-                                              ],
-                                            ),*/
+                                                                        if (value.isEmpty ||
+                                                                            value ==
+                                                                                '') {
+                                                                          return '    silahkan pilih area';
+                                                                        } else
+                                                                          return null;
+                                                                      }))
+                                                            ],
+                                                          ),
                                                         ),
                                                       ],
                                                     ),
                                                   ],
                                                 ),
-                                                TextFormField(
-                                                  style:
-                                                      TextStyle(fontSize: 13.5),
-                                                  autovalidateMode:
-                                                      AutovalidateMode
-                                                          .onUserInteraction,
-                                                  decoration: InputDecoration(
-                                                      labelStyle: TextStyle(
-                                                          fontSize: 13),
-                                                      labelText:
-                                                          'Bank Account Name',
-                                                      filled: true,
-                                                      fillColor:
-                                                          Colors.transparent,
-                                                      contentPadding:
-                                                          EdgeInsets.all(2.0),
-                                                      icon: Icon(
-                                                        GroovinMaterialIcons
-                                                            .account,
-                                                        color: Colors.pink[500],
-                                                      )),
-                                                  validator: (value) {
-                                                    String _msg;
-                                                    value.length < 3
-                                                        ? _msg =
-                                                            'Name is too short'
-                                                        : _msg = null;
-                                                    return _msg;
-                                                  },
-                                                  keyboardType:
-                                                      TextInputType.text,
-                                                  onSaved: (String value) {
-                                                    _newMemberForm
-                                                        .bankAccoutName = value;
-                                                  },
-                                                ),
                                                 Row(
                                                   children: [
-                                                    Flexible(
-                                                      fit: FlexFit.tight,
+                                                    Container(
+                                                      width: 212,
                                                       child: TextFormField(
                                                         style: TextStyle(
                                                             fontSize: 13.5),
                                                         autovalidateMode:
-                                                            AutovalidateMode
-                                                                .onUserInteraction,
+                                                            _autoValidateMode,
                                                         decoration:
                                                             InputDecoration(
                                                                 labelStyle:
@@ -818,7 +651,7 @@ class _NewReg extends State<NewReg> {
                                                                         fontSize:
                                                                             13),
                                                                 labelText:
-                                                                    'Bank Account Number',
+                                                                    'Nama Pemilik Rekening',
                                                                 filled: true,
                                                                 fillColor: Colors
                                                                     .transparent,
@@ -828,19 +661,111 @@ class _NewReg extends State<NewReg> {
                                                                             2.0),
                                                                 icon: Icon(
                                                                   GroovinMaterialIcons
-                                                                      .numeric,
+                                                                      .account,
                                                                   color: Colors
                                                                           .pink[
                                                                       500],
                                                                 )),
-                                                        /*  validator: (value) {
-                                              String _msg;
-                                              value.length < 16
-                                                  ? _msg =
-                                                      'Account# is too short'
-                                                  : _msg = null;
-                                              return _msg;
-                                            },*/
+                                                        validator: (value) {
+                                                          if (value.length <
+                                                              3) {
+                                                            return 'tulis nama lengkap';
+                                                          } else
+                                                            return null;
+                                                        },
+                                                        keyboardType:
+                                                            TextInputType.text,
+                                                        onSaved:
+                                                            (String value) {
+                                                          _newMemberForm
+                                                                  .bankAccoutName =
+                                                              value;
+                                                        },
+                                                      ),
+                                                    ),
+                                                    Icon(
+                                                        GroovinMaterialIcons
+                                                            .bank,
+                                                        color: Colors.pink[500],
+                                                        size: 19),
+                                                    Expanded(
+                                                        child: Wrap(
+                                                      children: [
+                                                        BankDropdown(
+                                                          model,
+                                                          isInsert: true,
+                                                        ),
+                                                        Container(
+                                                            height: 22,
+                                                            child:
+                                                                TextFormField(
+                                                                    decoration:
+                                                                        InputDecoration(
+                                                                      border: InputBorder
+                                                                          .none,
+                                                                    ),
+                                                                    autovalidateMode:
+                                                                        AutovalidateMode
+                                                                            .onUserInteraction,
+                                                                    validator:
+                                                                        (value) {
+                                                                      print(
+                                                                          'bankId=>${widget.model.bankDropDownValue.bankId}');
+                                                                      value = widget
+                                                                          .model
+                                                                          .bankDropDownValue
+                                                                          .bankId;
+
+                                                                      if (value
+                                                                              .isEmpty ||
+                                                                          value ==
+                                                                              null ||
+                                                                          value ==
+                                                                              '') {
+                                                                        return '    silahkan pilih bank';
+                                                                      } else
+                                                                        return null;
+                                                                    }))
+                                                      ],
+                                                    )),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Flexible(
+                                                      fit: FlexFit.tight,
+                                                      child: TextFormField(
+                                                        style: TextStyle(
+                                                            fontSize: 13.5),
+                                                        autovalidateMode:
+                                                            _autoValidateMode,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          labelStyle: TextStyle(
+                                                              fontSize: 13),
+                                                          labelText:
+                                                              'Nomor Rekening',
+                                                          filled: true,
+                                                          fillColor: Colors
+                                                              .transparent,
+                                                          contentPadding:
+                                                              EdgeInsets.only(
+                                                                  top: 0.0),
+                                                          icon: Icon(
+                                                            GroovinMaterialIcons
+                                                                .numeric,
+                                                            color: Colors
+                                                                .pink[500],
+                                                          ),
+                                                        ),
+                                                        //!fix
+                                                        validator: (value) {
+                                                          if (value.length <
+                                                              10) {
+                                                            return 'minimal 10 angka';
+                                                          } else
+                                                            return null;
+                                                        },
                                                         keyboardType:
                                                             TextInputType
                                                                 .number,
@@ -852,151 +777,70 @@ class _NewReg extends State<NewReg> {
                                                         },
                                                       ),
                                                     ),
-                                                    Container(
-                                                      width: 155,
-                                                      child: Theme(
-                                                        data: Theme.of(context)
-                                                            .copyWith(
-                                                                primaryColor:
-                                                                    Colors
-                                                                        .pink),
-                                                        child: Container(
-                                                            child: Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.max,
-                                                          children: [
-                                                            Container(
-                                                              width: 32,
-                                                              child: Icon(
+                                                    Flexible(
+                                                      fit: FlexFit.tight,
+                                                      child: TextFormField(
+                                                        style: TextStyle(
+                                                            fontSize: 13.5),
+                                                        autovalidateMode:
+                                                            _autoValidateMode,
+                                                        decoration:
+                                                            InputDecoration(
+                                                                labelStyle:
+                                                                    TextStyle(
+                                                                        fontSize:
+                                                                            13),
+                                                                labelText:
+                                                                    'NPWP',
+                                                                filled: true,
+                                                                fillColor: Colors
+                                                                    .transparent,
+                                                                contentPadding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            0.0),
+                                                                icon: Icon(
                                                                   GroovinMaterialIcons
-                                                                      .bank,
+                                                                      .tag_text_outline,
                                                                   color: Colors
                                                                           .pink[
-                                                                      500]),
-                                                            ),
-                                                            Flexible(
-                                                                fit: FlexFit
-                                                                    .tight,
-                                                                child:
-                                                                    SearchableDropdown(
-                                                                  underline:
-                                                                      Divider(
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                  ),
-                                                                  searchHint:
-                                                                      Text(
-                                                                    'Select or Type Bank Name',
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .center,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            12,
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                  isExpanded:
-                                                                      true,
-                                                                  //style: TextStyle(fontSize: 12),
-                                                                  hint: Center(
-                                                                    child: Text(
-                                                                      bankName,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              13,
-                                                                          fontWeight:
-                                                                              FontWeight.bold),
-                                                                    ),
-                                                                  ),
+                                                                      500],
+                                                                )),
+                                                        validator: (value) {
+                                                          if (value.length <
+                                                                  15 ||
+                                                              value.length >
+                                                                  15) {
+                                                            return 'masukkan 15 angka';
+                                                          }
 
-                                                                  iconEnabledColor:
-                                                                      Colors.pink[
-                                                                          200],
-                                                                  iconDisabledColor:
-                                                                      Colors
-                                                                          .grey,
-                                                                  items:
-                                                                      bankList,
-                                                                  value:
-                                                                      selectedBank,
-
-                                                                  onChanged:
-                                                                      (value) {
-                                                                    setState(
-                                                                        () {
-                                                                      selectedBank =
-                                                                          value;
-                                                                      bankSplit =
-                                                                          selectedBank
-                                                                              .split('\ ');
-                                                                      print(bankSplit
-                                                                          .first);
-                                                                      _newMemberForm
-                                                                              .bankId =
-                                                                          bankSplit
-                                                                              .first;
-
-                                                                      /*isChanged =
-                                                                    true;*/
-                                                                    });
-                                                                  },
-                                                                ))
-                                                          ],
-                                                        )),
+                                                          return null;
+                                                        },
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        onSaved:
+                                                            (String value) {
+                                                          _newMemberForm
+                                                                  .taxNumber =
+                                                              value;
+                                                        },
                                                       ),
                                                     ),
                                                   ],
-                                                ),
-                                                TextFormField(
-                                                  style:
-                                                      TextStyle(fontSize: 13.5),
-                                                  autovalidateMode:
-                                                      AutovalidateMode
-                                                          .onUserInteraction,
-                                                  decoration: InputDecoration(
-                                                      labelStyle: TextStyle(
-                                                          fontSize: 13),
-                                                      labelText: 'Tax Number',
-                                                      filled: true,
-                                                      fillColor:
-                                                          Colors.transparent,
-                                                      contentPadding:
-                                                          EdgeInsets.all(2.0),
-                                                      icon: Icon(
-                                                        GroovinMaterialIcons
-                                                            .tag_text_outline,
-                                                        color: Colors.pink[500],
-                                                      )),
-                                                  /*  validator: (value) {
-                                              String _msg;
-                                              value.length < 12
-                                                  ? _msg = 'Tax is too short'
-                                                  : _msg = null;
-                                              return _msg;
-                                            },*/
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  onSaved: (String value) {
-                                                    _newMemberForm.taxNumber =
-                                                        value;
-                                                  },
                                                 ),
                                               ],
                                             ),
                                           )
                                         : Container()),
-                                model.newRegcourierFee > 0
+                                model.newRegcourierFee > 0 && validData
                                     ? Container(
                                         height: 16,
                                         child: ListTile(
                                           title: Text(
                                             'Courier Fee',
                                             style: TextStyle(
-                                                fontSize: 12,
+                                                fontSize: 13,
                                                 fontWeight: FontWeight.bold),
                                             // textDirection: TextDirection.rtl,
                                           ),
@@ -1006,7 +850,7 @@ class _NewReg extends State<NewReg> {
                                                         ? model.newRegcourierFee
                                                         : 0) +
                                                 ' Rp ',
-                                            style: TextStyle(fontSize: 12),
+                                            style: TextStyle(fontSize: 13),
                                           ),
                                           leading: Icon(
                                             GroovinMaterialIcons.truck,
@@ -1016,23 +860,23 @@ class _NewReg extends State<NewReg> {
                                         ))
                                     : Container(),
                                 Padding(
-                                  padding: EdgeInsets.only(bottom: 3),
+                                  padding: EdgeInsets.only(bottom: 16),
                                 ),
-                                veri
+                                validData
                                     ? Container(
                                         height: 16,
                                         child: ListTile(
                                           title: Text(
                                             'Membership Fee',
                                             style: TextStyle(
-                                                fontSize: 12,
+                                                fontSize: 13,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           trailing: Text(
                                             formatter.format(double.tryParse(
                                                     model.settings.catCode)) +
                                                 ' Rp',
-                                            style: TextStyle(fontSize: 12),
+                                            style: TextStyle(fontSize: 13),
                                           ),
                                           leading: Icon(
                                             GroovinMaterialIcons.account_plus,
@@ -1042,110 +886,136 @@ class _NewReg extends State<NewReg> {
                                         ))
                                     : Container(),
                                 Padding(padding: EdgeInsets.only(bottom: 22)),
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    widget.model.newRegcourierFee > 0 &&
-                                            model.docType == 'CR'
-                                        ? Expanded(
-                                            flex: 1,
-                                            child: RawMaterialButton(
-                                              fillColor: Colors.tealAccent[400],
-                                              splashColor: Colors.pink[500],
-                                              constraints: BoxConstraints(
-                                                  maxWidth: 45, maxHeight: 45),
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          30.0)),
-                                              child: Container(
-                                                height: 34,
-                                                child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    children: [
-                                                      Icon(
-                                                        GroovinMaterialIcons
-                                                            .cash_multiple,
-                                                        size: 24,
-                                                        color: Colors.white,
-                                                      ),
-                                                      Text(
-                                                        'Total',
-                                                        style: TextStyle(
-                                                            fontSize: 12.5,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                        // textDirection: TextDirection.rtl,
-                                                      ),
-                                                      Text(
-                                                        formatter.format(model
-                                                                    .newRegcourierFee +
-                                                                double.tryParse(model
-                                                                    .settings
-                                                                    .catCode)) +
-                                                            ' Rp ',
-                                                        style: TextStyle(
-                                                            fontSize: 12.2,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                    ]),
-                                              ),
-                                              onPressed: () {},
+                                validData
+                                    ? Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          widget.model.newRegcourierFee > 0 &&
+                                                  model.docType == 'CR'
+                                              ? Expanded(
+                                                  flex: 1,
+                                                  child: RawMaterialButton(
+                                                    fillColor:
+                                                        Colors.tealAccent[400],
+                                                    splashColor:
+                                                        Colors.pink[500],
+                                                    constraints: BoxConstraints(
+                                                        maxWidth: 45,
+                                                        maxHeight: 45),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        30.0)),
+                                                    child: Container(
+                                                      height: 34,
+                                                      child: Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceAround,
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          children: [
+                                                            Icon(
+                                                              GroovinMaterialIcons
+                                                                  .cash_multiple,
+                                                              size: 24,
+                                                              color: Color(
+                                                                  0xFF303030),
+                                                            ),
+                                                            Text(
+                                                              'Total',
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      12.5,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                              // textDirection: TextDirection.rtl,
+                                                            ),
+                                                            Text(
+                                                              formatter.format(model
+                                                                          .newRegcourierFee +
+                                                                      double.tryParse(model
+                                                                          .settings
+                                                                          .catCode)) +
+                                                                  ' Rp ',
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      12.2,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                          ]),
+                                                    ),
+                                                    onPressed: () {},
+                                                  ),
+                                                )
+                                              : Container(),
+                                        ],
+                                      )
+                                    : Container(),
+                                veri
+                                    ? Container(
+                                        child: RawMaterialButton(
+                                            constraints: BoxConstraints(
+                                                minWidth: 40, minHeight: 40),
+                                            splashColor: Color(0xFF303030),
+                                            shape: CircleBorder(),
+                                            highlightColor: Colors.pink[500],
+                                            elevation: 8,
+                                            fillColor: model.docType == 'CR'
+                                                ? Color(0xFF303030)
+                                                : Colors.green,
+                                            child: Icon(
+                                              model.docType == 'CR'
+                                                  ? GroovinMaterialIcons.truck
+                                                  : Icons.check,
+                                              color: Colors.amber,
+                                              size: 27,
                                             ),
-                                          )
-                                        : Container(),
-                                    veri
-                                        ? Container(
-                                            child: RawMaterialButton(
-                                                constraints: BoxConstraints(
-                                                    minWidth: 34,
-                                                    minHeight: 34),
-                                                splashColor: Colors.amber,
-                                                shape: CircleBorder(),
-                                                highlightColor:
-                                                    Colors.pink[500],
-                                                elevation: 8,
-                                                fillColor: model.docType == 'CR'
-                                                    ? Colors.amber
-                                                    : Colors.green,
-                                                child: Icon(
-                                                  model.docType == 'CR'
-                                                      ? GroovinMaterialIcons
-                                                          .truck
-                                                      : Icons.check,
-                                                  color: Colors.white,
-                                                  size: 27,
-                                                ),
-                                                onPressed: () async {
-                                                  model.newRegcourierFee = 0;
-                                                  model.docType == 'CR'
-                                                      ? showDialog(
-                                                          context: context,
-                                                          builder: (_) {
-                                                            return ShipmentPlace(
-                                                              model: model,
-                                                              memberId: model
-                                                                  .userInfo
-                                                                  .distrId,
-                                                              isEdit: true,
-                                                              isNewMember: true,
-                                                            );
-                                                          })
-                                                      : Container(); //* add save Funcion
+                                            onPressed: () async {
+                                              if (validData) {
+                                                model.newRegcourierFee = 0;
+                                                model.docType == 'CR'
+                                                    ? showDialog(
+                                                        context: context,
+                                                        builder: (_) {
+                                                          return ShipmentPlace(
+                                                            model: model,
+                                                            memberId: model
+                                                                .userInfo
+                                                                .distrId,
+                                                            isEdit: true,
+                                                            isNewMember: true,
+                                                          );
+                                                        })
+                                                    : Container();
+                                              } else {
+                                                _autoValidateMode =
+                                                    AutovalidateMode.always;
+                                                showDialog(
+                                                    context: context,
+                                                    child: AlertDialog(
+                                                      title: Text("Your Title"),
+                                                      content: Text(
+                                                          '${_newMemberFormKey.currentState.validate()}'),
+                                                    ));
+                                              }
+                                              //* add save Funcion
 
-                                                  /*  String msg = '';
+                                              /*
+                                                        //!fix
+                                                         String msg = '';
                                             if (validateAndSave(
                                                 model.userInfo.distrId,
                                                 model.setStoreId)) {
@@ -1163,16 +1033,14 @@ class _NewReg extends State<NewReg> {
                                               PaymentInfo(model)
                                                   .flushAction(context)
                                                   .show(context);*/
-                                                }
+                                            }
 
-                                                //  s
+                                            //  s
 
-                                                //_newMemberFormKey.currentState.reset();
+                                            //_newMemberFormKey.currentState.reset();
 
-                                                ))
-                                        : Container(),
-                                  ],
-                                )
+                                            ))
+                                    : Container()
                               ])),
                         ),
                       )),
@@ -1195,8 +1063,8 @@ class _NewReg extends State<NewReg> {
         apiUrl,
         _newMemberForm,
         user,
-        getplace(placeSplit.first).shipmentPlace,
-        getplace(placeSplit.first).spName,
+        '', //!getplace(placeSplit.first).shipmentPlace,
+        '', //!getplace(placeSplit.first).spName,
         docType,
         address, //_newMemberForm.address,
         storeId);
@@ -1263,6 +1131,109 @@ class _NewReg extends State<NewReg> {
           );
         });
   }
+  /*  SearchableDropdown(
+                                                                      underline:
+                                                                          Divider(
+                                                                        color: Colors
+                                                                            .transparent,
+                                                                      ),
+                                                                      isExpanded:
+                                                                          true,
+                                                                      //style: TextStyle(fontSize: 12),
+                                                                      hint:
+                                                                          Text(
+                                                                        'Area',
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                13,
+                                                                            fontWeight:
+                                                                                FontWeight.bold),
+                                                                      ),
+                                                                      iconEnabledColor:
+                                                                          Colors
+                                                                              .pink[200],
+                                                                      iconDisabledColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      items:
+                                                                          places,
+                                                                      value:
+                                                                          selectedValue,
+                                                                      onChanged:
+                                                                          (value) {
+                                                                        setState(
+                                                                            () {
+                                                                          selectedValue =
+                                                                              value;
+                                                                          placeSplit =
+                                                                              selectedValue.split('\ ');
+                                                                        });
+                                                                      },
+                                                                    ) SearchableDropdown(
+                                                                underline:
+                                                                    Divider(
+                                                                  color: Colors
+                                                                      .transparent,
+                                                                ),
+                                                                searchHint:
+                                                                    Text(
+                                                                  'Select or Type Bank Name',
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
+                                                                isExpanded:
+                                                                    true,
+                                                                //style: TextStyle(fontSize: 12),
+                                                                hint: Center(
+                                                                  child: Text(
+                                                                    bankName,
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            13,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+
+                                                                iconEnabledColor:
+                                                                    Colors.pink[
+                                                                        200],
+                                                                iconDisabledColor:
+                                                                    Colors.grey,
+                                                                items: bankList,
+                                                                value:
+                                                                    selectedBank,
+
+                                                                onChanged:
+                                                                    (value) {
+                                                                  setState(() {
+                                                                    selectedBank =
+                                                                        value;
+                                                                    bankSplit =
+                                                                        selectedBank
+                                                                            .split('\ ');
+                                                                    print(bankSplit
+                                                                        .first);
+                                                                    _newMemberForm
+                                                                            .bankId =
+                                                                        bankSplit
+                                                                            .first;
+
+                                                                    /*isChanged =
+                                                                    true;*/
+                                                                  });
+                                                                },
+                                                              ),*/
 /*
   void _regPressed() async {
     FocusScope.of(context).requestFocus(new FocusNode());

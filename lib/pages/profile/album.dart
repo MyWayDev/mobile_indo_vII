@@ -82,7 +82,9 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
     taxPhotoUrl = taxImageString();
     bankPhotoUrl = bankImageString();
     // Force refresh input
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future getIdImage() async {
@@ -90,7 +92,7 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
     final _img =
         await _picker.getImage(source: ImageSource.gallery, imageQuality: 10);
 
-    if (_img != null) {
+    if (_img != null && mounted) {
       setState(() {
         idImageFile = File(_img.path);
         isLoading = true;
@@ -104,7 +106,7 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
     final _img =
         await _picker.getImage(source: ImageSource.gallery, imageQuality: 10);
 
-    if (_img != null) {
+    if (_img != null && mounted) {
       setState(() {
         bankImageFile = File(_img.path);
         isLoading = true;
@@ -119,7 +121,7 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
     final _img =
         await _picker.getImage(source: ImageSource.gallery, imageQuality: 10);
 
-    if (_img != null) {
+    if (_img != null && mounted) {
       setState(() {
         taxImageFile = File(_img.path);
         isLoading = true;
@@ -151,32 +153,43 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
             'bankPhotoUrl': bankPhotoUrl
           }).then((data) async {
             await prefs.setString('taxPhotoUrl', taxPhotoUrl);
-            setState(() {
-              isLoading = false;
-            });
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+              });
+            }
+
             Fluttertoast.showToast(msg: "Upload success");
           }).catchError((err) {
-            setState(() {
-              isLoading = false;
-            });
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+              });
+            }
             Fluttertoast.showToast(msg: err.toString());
           });
         }, onError: (err) {
-          setState(() {
-            isLoading = false;
-          });
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+          }
           Fluttertoast.showToast(msg: 'This file is not an image');
         });
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
         Fluttertoast.showToast(msg: 'This file is not an image');
       }
     }, onError: (err) {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
       Fluttertoast.showToast(msg: err.toString());
     });
   }
@@ -204,32 +217,42 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
             'taxPhotoUrl': taxPhotoUrl
           }).then((data) async {
             await prefs.setString('taxPhotoUrl', taxPhotoUrl);
-            setState(() {
-              isLoading = false;
-            });
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+              });
+            }
             Fluttertoast.showToast(msg: "Upload success");
           }).catchError((err) {
-            setState(() {
-              isLoading = false;
-            });
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+              });
+            }
             Fluttertoast.showToast(msg: err.toString());
           });
         }, onError: (err) {
-          setState(() {
-            isLoading = false;
-          });
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+          }
           Fluttertoast.showToast(msg: 'This file is not an image');
         });
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
         Fluttertoast.showToast(msg: 'This file is not an image');
       }
     }, onError: (err) {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
       Fluttertoast.showToast(msg: err.toString());
     });
   }
@@ -257,32 +280,42 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
             //'taxPhotoUrl': taxPhotoUrl
           }).then((data) async {
             await prefs.setString('idPhotoUrl', idPhotoUrl);
-            setState(() {
-              isLoading = false;
-            });
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+              });
+            }
             Fluttertoast.showToast(msg: "Upload success");
           }).catchError((err) {
-            setState(() {
-              isLoading = false;
-            });
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+              });
+            }
             Fluttertoast.showToast(msg: err.toString());
           });
         }, onError: (err) {
-          setState(() {
-            isLoading = false;
-          });
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+          }
           Fluttertoast.showToast(msg: 'This file is not an image');
         });
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
         Fluttertoast.showToast(msg: 'This file is not an image');
       }
     }, onError: (err) {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
       Fluttertoast.showToast(msg: err.toString());
     });
   }
@@ -301,7 +334,7 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'Personal Id ',
+                        'Nomor KTP',
                         style: TextStyle(
                             color: Colors.pink[900],
                             fontWeight: FontWeight.bold,
@@ -402,7 +435,7 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
                           child: Column(
                             children: <Widget>[
                               Text(
-                                'Tax Id',
+                                'NPWP',
                                 style: TextStyle(
                                     color: Colors.pink[900],
                                     fontWeight: FontWeight.bold,
@@ -506,7 +539,7 @@ class _ProfileAlbumState extends State<ProfileAlbum> {
                           child: Column(
                             children: <Widget>[
                               Text(
-                                'Bank Id',
+                                'Nomor Rekening',
                                 style: TextStyle(
                                     color: Colors.pink[900],
                                     fontWeight: FontWeight.bold,

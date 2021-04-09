@@ -39,9 +39,9 @@ NotificationDetails get _image {
     ledColor: const Color(0xFFf2dee9),
     ledOnMs: 500,
     ledOffMs: 500,
-    largeIcon: 'assets/images/myway.png',
+    largeIcon: const DrawableResourceAndroidBitmap('assets/images/myway.png'),
     enableLights: true,
-    style: AndroidNotificationStyle.BigText,
+    styleInformation: DefaultStyleInformation(true, true),
 
     //sound: 'point.mp3',
   );
@@ -70,9 +70,10 @@ NotificationDetails get _ongoing {
     ledColor: const Color(0xFFf2dee9),
     ledOnMs: 500,
     ledOffMs: 500,
-    largeIcon: 'assets/images/myway.png',
+
+    largeIcon: const DrawableResourceAndroidBitmap('assets/images/myway.png'),
     enableLights: true,
-    style: AndroidNotificationStyle.BigText,
+    styleInformation: DefaultStyleInformation(true, true),
     //sound: 'point.mp3',
   );
   final iOSChannelSpecifics = IOSNotificationDetails(presentSound: true);

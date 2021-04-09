@@ -39,35 +39,43 @@ class _ShipmentAreaState extends State<ShipmentPlace>
   List<Courier> couriers = [];
 
   hasData(bool data) {
-    setState(() {
-      _hasData = data;
-    });
+    if (mounted) {
+      setState(() {
+        _hasData = data;
+      });
+    }
   }
 
   isloading(bool loading) {
-    setState(() {
-      _isloading = loading;
-    });
+    if (mounted) {
+      setState(() {
+        _isloading = loading;
+      });
+    }
   }
 
   void _valueChanged(bool v) {
-    setState(() {
-      isSelected = v;
-    });
+    if (mounted) {
+      setState(() {
+        isSelected = v;
+      });
+    }
   }
 
   void _setType(
     String value,
   ) {
-    setState(() {
-      type = value;
-      widget.model.distrPoint = distrpoint;
-      widget.model.shipmentArea = value;
-      widget.model.shipmentName = shipmentAreas
-          .where((a) => a.shipmentArea == value)
-          .first
-          .shipmentName;
-    });
+    if (mounted) {
+      setState(() {
+        type = value;
+        widget.model.distrPoint = distrpoint;
+        widget.model.shipmentArea = value;
+        widget.model.shipmentName = shipmentAreas
+            .where((a) => a.shipmentArea == value)
+            .first
+            .shipmentName;
+      });
+    }
     print('type=>$type');
     print('distrPoint=>${widget.model.distrPoint}');
     print('shipmentArea=>${widget.model.shipmentArea}');
@@ -79,17 +87,19 @@ class _ShipmentAreaState extends State<ShipmentPlace>
     isloading(true);
     distrPoints = await widget.model.getPoints(widget.model.distrPoint);
     distrPoints.forEach((p) => print('getpoints+>${p.name}'));
-    if (distrPoints.length > 0) {
+    if (distrPoints.length > 0 && mounted) {
       setState(() {
         //   widget.model.distrPoint = distrPoints[0].id;
         isloading(false);
       });
     } else {
-      setState(() {
-        isloading(false);
-      });
+      if (mounted) {
+        setState(() {
+          isloading(false);
+        });
+      }
     }
-    if (distrPoints.length == 1) {
+    if (distrPoints.length == 1 && mounted) {
       setState(() {
         distrpoint = widget.model.distrPoint; //distrPoints[0].id;
       });
@@ -121,16 +131,18 @@ class _ShipmentAreaState extends State<ShipmentPlace>
         : shipmentAreas =
             await widget.model.getShipmentAreas(widget.memberId, distrpoint);
 
-    if (shipmentAreas.length > 0) {
+    if (shipmentAreas.length > 0 && mounted) {
       setState(() {
         hasData(true);
         isloading(false);
       });
     } else {
-      setState(() {
-        hasData(false);
-        isloading(false);
-      });
+      if (mounted) {
+        setState(() {
+          hasData(false);
+          isloading(false);
+        });
+      }
     }
   }
 
@@ -212,9 +224,11 @@ class _ShipmentAreaState extends State<ShipmentPlace>
                               validators: [FormBuilderValidators.required()],
                               onChanged: (value) async {
                                 print('dropdown value:$value');
-                                setState(() {
-                                  distrpoint = value;
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    distrpoint = value;
+                                  });
+                                }
                                 await getAreas();
                                 checkAvalAddress();
                               },
@@ -304,17 +318,20 @@ class _ShipmentAreaState extends State<ShipmentPlace>
                                           _fbKey.currentState.value.values.last)
                                       .first
                                       .shipmentArea);
-                                  setState(() {
-                                    widget.model.shipmentAddress = shipmentAreas
-                                        .where((id) =>
-                                            id.shipmentId ==
-                                            _fbKey
-                                                .currentState.value.values.last)
-                                        .first
-                                        .shipmentAddress;
-                                    print(
-                                        'shipment Address${widget.model.shipmentAddress}');
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      widget.model.shipmentAddress =
+                                          shipmentAreas
+                                              .where((id) =>
+                                                  id.shipmentId ==
+                                                  _fbKey.currentState.value
+                                                      .values.last)
+                                              .first
+                                              .shipmentAddress;
+                                      print(
+                                          'shipment Address${widget.model.shipmentAddress}');
+                                    });
+                                  }
                                   print(
                                       '${widget.model.shipmentAddress}==>${widget.model.shipmentArea}=>${widget.model.shipmentName}');
 
@@ -356,10 +373,12 @@ class _ShipmentAreaState extends State<ShipmentPlace>
                                 ),
                                 onPressed: () async {
                                   _fbKey.currentState.save();
-                                  setState(() {
-                                    distrpoint =
-                                        _fbKey.currentState.value.values.first;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      distrpoint = _fbKey
+                                          .currentState.value.values.first;
+                                    });
+                                  }
                                   await getAreas();
                                   checkAvalAddress();
                                 },

@@ -66,7 +66,7 @@ class _MyApp extends State<MyApp> {
                     token: _token,
                   )),
         );
-    var android = new AndroidInitializationSettings('icon');
+    var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
 
     var ios = new IOSInitializationSettings(
         onDidReceiveLocalNotification: (id, title, body, payload) =>

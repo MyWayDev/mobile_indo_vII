@@ -64,6 +64,7 @@ class _Report extends State<Report> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       resizeToAvoidBottomPadding: false,
       floatingActionButton: FloatingActionButton(
         elevation: 21.5,

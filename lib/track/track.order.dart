@@ -46,11 +46,11 @@ class _TrackOrder extends State<TrackOrder> {
     isLoading(true, model);
     print('$docId=>$distrId=>$storeId=>$soType');
     final http.Response responseI = await http.post(
-        'http://34.101.79.170:5000/api/updatedelap/$docId/$distrId/$storeId/$soType');
+        'https://mywayindoapi.azurewebsites.net/api/updatedelap/$docId/$distrId/$storeId/$soType');
 
     if (responseI.statusCode == 200) {
       final http.Response responseII = await http.post(
-          'http://34.101.79.170:5000/api/editvou/$docId/$distrId/$storeId/$soType');
+          'https://mywayindoapi.azurewebsites.net/api/editvou/$docId/$distrId/$storeId/$soType');
       if (responseII.statusCode == 200) {
         model.checkSoDupl(_getSorders, widget.userId);
       } else {
@@ -68,8 +68,8 @@ class _TrackOrder extends State<TrackOrder> {
   void _getSorders(String userId) async {
     firstSorder = [];
 
-    final http.Response response =
-        await http.get('http://34.101.79.170:5000/api/userpending/$userId');
+    final http.Response response = await http
+        .get('https://mywayindoapi.azurewebsites.net/api/userpending/$userId');
     if (response.statusCode == 200 && firstSorder.length == 0) {
       print('getSorder ok');
       List<dynamic> soList = json.decode(response.body);

@@ -239,10 +239,13 @@ class NewMember {
 
   String editMemberEncode(NewMember newMember) {
     final dyn = newMember.editToJson();
+
     return json.encode(dyn);
   }
 
   Future<http.Response> editPost(NewMember newMember, String apiUrl) async {
+    print(editMemberEncode(newMember));
+
     final response = await http.post('$apiUrl/edit_distr/',
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json',
