@@ -15,7 +15,7 @@ import 'package:http/http.dart' as http;
 
 class AddRegion extends StatefulWidget {
   final String memberId;
-  AddRegion(this.memberId, {Key key}) : super(key: key);
+  const AddRegion(this.memberId, {Key key}) : super(key: key);
 
   @override
   _AddRegionState createState() => _AddRegionState();

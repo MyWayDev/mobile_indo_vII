@@ -18,6 +18,7 @@ class SaveBulkDialog extends StatefulWidget {
   final String note;
   final String areaId;
   final String userId;
+
   const SaveBulkDialog(this.courierId, this.courierFee, this.distrId, this.note,
       this.areaId, this.userId,
       {Key key})

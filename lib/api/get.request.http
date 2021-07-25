@@ -70,7 +70,7 @@ Content-Type: application/json
 POST  https://{{host}}/memregister_updated/ HTTP/1.1
 Content-Type: application/json
 {   
-/	"SERVICE_CENTER": "02",
+  "SERVICE_CENTER": "02",
 	"SPONSOR_ID": "00000001",
 	"FAMILY_LNAME": "Ayman",
 	"LNAME": "Abdelrahman",

@@ -119,10 +119,13 @@ class _DocFormState extends State<DocForm> {
                                       ),
                                       child: DropdownButton(
                                         hint: Center(
-                                          child: Text(
-                                            "Nomor tagihan",
-                                            style: TextStyle(fontSize: 13),
-                                          ),
+                                          child: docs.isNotEmpty
+                                              ? Text(
+                                                  "Nomor tagihan",
+                                                  style:
+                                                      TextStyle(fontSize: 13),
+                                                )
+                                              : Text('no tagihan'),
                                         ),
                                         isExpanded: true,
                                         items: docs.map((option) {
@@ -467,8 +470,10 @@ class _DocFormState extends State<DocForm> {
           'https://mywayindoapi.azurewebsites.net/api/getlateinvoices/$distrId');
       print('running late invoice: $docProblem');
     }
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.contentLength > 0) {
       docList = json.decode(response.body) as List;
+    } else {
+      docList = [];
     }
     docs = docList
         .map((i) => TicketDoc.toJson(i))

@@ -43,6 +43,7 @@ class PaymentInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('changed...');
     return flushAction(context);
   }
 }

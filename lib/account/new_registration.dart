@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:mor_release/models/area.dart';
+import 'package:mor_release/models/courier.dart';
 import 'package:mor_release/models/user.dart';
 import 'package:mor_release/pages/order/widgets/areaDropdown.dart';
+import 'package:mor_release/pages/order/widgets/errorMsgs.dart';
+import 'package:mor_release/pages/order/widgets/newMem_Courier.dart';
 import 'package:mor_release/pages/order/widgets/shipmentArea.dart';
 import 'package:mor_release/pages/order/widgets/storeFloat.dart';
 import 'package:mor_release/pages/profile/bankDropdown.dart';
@@ -20,7 +24,7 @@ import 'package:intl/intl.dart';
 class NewReg extends StatefulWidget {
   final MainModel model;
 
-  NewReg(this.model);
+  const NewReg(this.model);
   //final List<Area> areas;
   // NewMemberPage(this.areas);
   State<StatefulWidget> createState() {
@@ -68,7 +72,7 @@ class _NewReg extends State<NewReg> {
 
   @override
   void initState() {
-    _autoValidateMode = AutovalidateMode.onUserInteraction;
+    _autoValidateMode = AutovalidateMode.disabled;
     widget.model.areaDropDownValue =
         AreaPlace(areaId: '', areaName: '', shipmentPlace: '', spName: '');
     widget.model.bankDropDownValue = Bank(bankId: '', bankName: '');
@@ -135,6 +139,15 @@ class _NewReg extends State<NewReg> {
         });
   }
 
+  bool _validFormData() {
+    if (mounted) {
+      setState(() {
+        validData = _validFormData();
+      });
+    }
+    return validData;
+  }
+
   bool validateAndSave(String userId, String sc) {
     //final form = _newMemberFormKey.currentState;
     isloading(true);
@@ -143,11 +156,7 @@ class _NewReg extends State<NewReg> {
     _newMemberForm.email = userId;
     _newMemberForm.areaId = 'getplace(placeSplit.first).areaId';
     _newMemberForm.serviceCenter = sc;
-    if (mounted) {
-      setState(() {
-        validData = _newMemberFormKey.currentState.validate();
-      });
-    }
+    _validFormData();
     // isloading(true);
     print('valide entry $validData');
     _newMemberFormKey.currentState.save();
@@ -371,7 +380,7 @@ class _NewReg extends State<NewReg> {
                                                                         'Tanggal lahir',
                                                                         style: TextStyle(
                                                                             fontSize:
-                                                                                13,
+                                                                                12,
                                                                             color:
                                                                                 Colors.grey[700]),
                                                                       )
@@ -983,8 +992,9 @@ class _NewReg extends State<NewReg> {
                                               color: Colors.amber,
                                               size: 27,
                                             ),
-                                            onPressed: () async {
-                                              if (validData) {
+                                            onPressed: () {
+                                              if (_newMemberFormKey.currentState
+                                                  .validate()) {
                                                 model.newRegcourierFee = 0;
                                                 model.docType == 'CR'
                                                     ? showDialog(
@@ -1003,13 +1013,10 @@ class _NewReg extends State<NewReg> {
                                               } else {
                                                 _autoValidateMode =
                                                     AutovalidateMode.always;
-                                                showDialog(
-                                                    context: context,
-                                                    child: AlertDialog(
-                                                      title: Text("Your Title"),
-                                                      content: Text(
-                                                          '${_newMemberFormKey.currentState.validate()}'),
-                                                    ));
+                                                ErrorMsgs(
+                                                        'Silahkan Lengkapi Data Yang Bertanda Merah ')
+                                                    .flushErrorMsg(context)
+                                                    .show(context);
                                               }
                                               //* add save Funcion
 

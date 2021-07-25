@@ -9,7 +9,8 @@ import 'package:blinking_text/blinking_text.dart';
 class AreaDropdown extends StatefulWidget {
   final MainModel model;
   final bool isInsert;
-  AreaDropdown(this.model, {Key key, this.isInsert = false}) : super(key: key);
+  const AreaDropdown(this.model, {Key key, this.isInsert = false})
+      : super(key: key);
 
   @override
   _AreaDropdownState createState() => _AreaDropdownState();
@@ -109,6 +110,8 @@ class _AreaDropdownState extends State<AreaDropdown> {
     return DropdownSearch<AreaPlace>(
         mode: Mode.BOTTOM_SHEET,
         maxHeight: 450,
+        autoFocusSearchBox: true,
+        showAsSuffixIcons: true,
         compareFn: (AreaPlace i, AreaPlace s) =>
             i.shipmentPlace == s.shipmentPlace,
         // autoFocusSearchBox: true,

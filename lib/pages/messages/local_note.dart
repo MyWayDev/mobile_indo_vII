@@ -6,12 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mor_release/models/ticket.dart';
 import 'package:mor_release/pages/messages/chat.dart';
-
 import '../const.dart';
 
 class LocalNotification extends StatefulWidget {
   final String token;
-  LocalNotification({@required this.token});
+  const LocalNotification({@required this.token});
   @override
   _LocalNotificationState createState() => _LocalNotificationState();
 }
@@ -23,7 +22,6 @@ class _LocalNotificationState extends State<LocalNotification> {
   List<Notify> filteredNotify = [];
   String path = 'indoDb/tokens/';
   FirebaseDatabase database = FirebaseDatabase.instance;
-
   DatabaseReference databaseReference;
   var subAdd;
   var subChanged;

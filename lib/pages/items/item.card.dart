@@ -96,7 +96,7 @@ class ItemCard extends StatelessWidget {
                                   )
                                 : Text(''),
 
-                            ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
                             ScopedModelDescendant<MainModel>(builder:
                                 (BuildContext context, Widget child,
                                     MainModel model) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:mor_release/account/new_registration.dart';
 import 'package:mor_release/models/courier.dart';
 import 'package:mor_release/scoped/connected.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -34,7 +33,6 @@ class _NewMemberCourierState extends State<NewMemberCourier> {
   @override
   void initState() {
     getinit();
-
     super.initState();
   }
 
@@ -158,25 +156,26 @@ class _NewMemberCourierState extends State<NewMemberCourier> {
                             ),
                           )),
                       Container(
-                          height: 27,
-                          child: ListTile(
-                            title: Text(
-                              'Biaya Keanggotaan',
-                              style: TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.bold),
-                            ),
-                            trailing: Text(
-                              formatter.format(
-                                      double.tryParse(model.settings.catCode)) +
-                                  ' Rp',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            leading: Icon(
-                              GroovinMaterialIcons.account_plus,
-                              size: 22,
-                              color: Colors.black,
-                            ),
-                          )),
+                        height: 27,
+                        child: ListTile(
+                          title: Text(
+                            'Biaya Keanggotaan',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          trailing: Text(
+                            formatter.format(
+                                    double.tryParse(model.settings.catCode)) +
+                                ' Rp',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          leading: Icon(
+                            GroovinMaterialIcons.account_plus,
+                            size: 22,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(top: 24),
                       ),
@@ -184,33 +183,34 @@ class _NewMemberCourierState extends State<NewMemberCourier> {
                         color: Colors.black,
                       ),
                       Container(
-                          height: 27,
-                          child: ListTile(
-                            title: Text(
-                              'Total',
-                              style: TextStyle(
-                                  fontSize: 12.5, fontWeight: FontWeight.bold),
-                              // textDirection: TextDirection.rtl,
-                            ),
-                            trailing: Text(
-                              formatter.format(courierFee +
-                                      double.tryParse(model.settings.catCode)) +
-                                  ' Rp ',
-                              style: TextStyle(
-                                  fontSize: 12.2, fontWeight: FontWeight.bold),
-                            ),
-                            leading: Icon(
-                              GroovinMaterialIcons.cash_multiple,
-                              size: 24,
-                              color: Colors.green,
-                            ),
-                          )),
+                        height: 27,
+                        child: ListTile(
+                          title: Text(
+                            'Total',
+                            style: TextStyle(
+                                fontSize: 12.5, fontWeight: FontWeight.bold),
+                            // textDirection: TextDirection.rtl,
+                          ),
+                          trailing: Text(
+                            formatter.format(courierFee +
+                                    double.tryParse(model.settings.catCode)) +
+                                ' Rp ',
+                            style: TextStyle(
+                                fontSize: 12.2, fontWeight: FontWeight.bold),
+                          ),
+                          leading: Icon(
+                            GroovinMaterialIcons.cash_multiple,
+                            size: 24,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ),
                     ])
                   : Container()
             ]),
             actions: [
-              FlatButton(
-                child: Text("OK"),
+              IconButton(
+                icon: Icon(Icons.check_circle_outline_sharp),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

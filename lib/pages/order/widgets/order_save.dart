@@ -167,7 +167,7 @@ class OrderSave extends StatelessWidget {
                                 )
                               : Text(
                                   formatter.format((orderTotal(model) * 1.1) +
-                                          courierFee) +
+                                          courierFee * 1.01) +
                                       ' Rp',
                                   style: TextStyle(
                                       fontSize: 13,
@@ -319,9 +319,9 @@ class OrderSave extends StatelessWidget {
                                   ],
                                 )
                               : Text(
-                                  formatter.format(
-                                          (bulkOrderTotal(model) * 1.1) +
-                                              bulkOrderCourierFee(model)) +
+                                  formatter.format((bulkOrderTotal(model) *
+                                              1.1) +
+                                          bulkOrderCourierFee(model) * 1.01) +
                                       ' Rp',
                                   style: TextStyle(
                                       fontSize: 13,
