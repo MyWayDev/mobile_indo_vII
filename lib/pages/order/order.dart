@@ -278,7 +278,7 @@ class _OrderPage extends State<OrderPage> {
                   ))
               : Container(),
           resizeToAvoidBottomInset: true,
-          resizeToAvoidBottomPadding: false,
+          // resizeToAvoidBottomPadding: false,
           body: Stack(
             children: <Widget>[
               Column(children: <Widget>[

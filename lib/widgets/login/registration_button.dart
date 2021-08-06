@@ -13,7 +13,7 @@ class RegistrationButton extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0)),
               splashColor: Theme.of(context).primaryColor,
-              color: Colors.pink[100],
+              color: Colors.purple[100],
               child: Row(
                 children: <Widget>[
                   Padding(
@@ -21,7 +21,7 @@ class RegistrationButton extends StatelessWidget {
                     child: Text(
                       "Daftar",
                       style: TextStyle(
-                        color: Theme.of(context).primaryColor,
+                        color: Colors.purple,
                         fontWeight: FontWeight.bold,
                         fontSize: 16.0,
                       ),
@@ -35,6 +35,8 @@ class RegistrationButton extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(0.2),
                       child: FlatButton(
+                          highlightColor: Colors.purple,
+                          colorBrightness: Brightness.dark,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(28.0)),
                           splashColor: Colors.white,
@@ -42,7 +44,7 @@ class RegistrationButton extends StatelessWidget {
                           child: Icon(
                             Icons.person_add,
                             size: 32.0,
-                            color: Theme.of(context).primaryColor,
+                            color: Colors.purple,
                           ),
                           onPressed: () =>
                               //  Navigator.pushNamed(context, '/phoneAuth')),

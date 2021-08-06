@@ -33,42 +33,39 @@ class _TicketSelectState extends State<TicketSelect> {
       ),
       content: FormBuilder(
         // autovalidate: true,
-        child: FormBuilderCustomField(
-          attribute: "type",
-          validators: [
-            FormBuilderValidators.required(),
-          ],
-          formField: FormField(
-              // initialValue: [],
-              //key: _formKey,
-              enabled: true,
-              builder: (FormFieldState<dynamic> field) {
-                return ScopedModelDescendant<MainModel>(
-                  builder:
-                      (BuildContext context, Widget child, MainModel model) {
-                    return Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: DropdownButton(
-                        isExpanded: true,
-                        items: widget.types.map((option) {
-                          return DropdownMenuItem(
-                              child: Text("${option.ticketType}"),
-                              value: option.ticketType);
-                        }).toList(),
-                        value: field.value,
-                        onChanged: (value) async {
-                          field.didChange(value);
-                          type = value;
-                          _valueChanged(true);
-                          print('dropDown value:$value');
-                          // int x = types.indexOf(value);
-                        },
-                      ),
-                    );
-                  },
-                );
-              }),
-        ),
+
+        child: FormBuilderField(
+            name: "type",
+            validator: FormBuilderValidators.compose(
+                [FormBuilderValidators.required(context)]),
+            // initialValue: [],
+            //key: _formKey,
+            enabled: true,
+            builder: (FormFieldState<dynamic> field) {
+              return ScopedModelDescendant<MainModel>(
+                builder: (BuildContext context, Widget child, MainModel model) {
+                  return Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: DropdownButton(
+                      isExpanded: true,
+                      items: widget.types.map((option) {
+                        return DropdownMenuItem(
+                            child: Text("${option.ticketType}"),
+                            value: option.ticketType);
+                      }).toList(),
+                      value: field.value,
+                      onChanged: (value) async {
+                        field.didChange(value);
+                        type = value;
+                        _valueChanged(true);
+                        print('dropDown value:$value');
+                        // int x = types.indexOf(value);
+                      },
+                    ),
+                  );
+                },
+              );
+            }),
       ),
       actions: <Widget>[
         IconButton(

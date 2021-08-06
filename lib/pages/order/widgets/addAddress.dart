@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:mor_release/models/area.dart';
@@ -275,9 +276,9 @@ class _AddAddressState extends State<AddAddress> {
                       expands: false,
                       autocorrect: true,
                       // autovalidate: true,
-                      maxLengthEnforced: false,
+                      maxLengthEnforcement: MaxLengthEnforcement.none,
                       maxLines: 3,
-                      attribute: "comment",
+                      name: "comment",
                       decoration: InputDecoration(
                         labelText: "Detail Alamat",
                         /*  border: OutlineInputBorder(
@@ -292,14 +293,22 @@ class _AddAddressState extends State<AddAddress> {
                         });
                       },
 
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                        FormBuilderValidators.minLength(context, 3,
+                            allowEmpty: false, errorText: errorText),
+                        FormBuilderValidators.maxLength(context, 500,
+                            errorText: 'Batas masuk tercapai'),
+                      ]),
+
                       //  valueTransformer: (text) => num.tryParse(text),
-                      validators: [
+                      /* validators: [
                         FormBuilderValidators.required(errorText: errorText),
                         FormBuilderValidators.minLength(3,
                             errorText: errorText),
                         FormBuilderValidators.maxLength(500,
                             errorText: 'Batas masuk tercapai'),
-                      ],
+                      ],*/
                     ))
                 : Container(),
             isValid

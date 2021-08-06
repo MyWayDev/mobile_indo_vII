@@ -177,7 +177,7 @@ class _EndOrder extends State<EndOrder> with SingleTickerProviderStateMixin {
 
       return Scaffold(
           resizeToAvoidBottomInset: false,
-          resizeToAvoidBottomPadding: false,
+          //resizeToAvoidBottomPadding: false,
           appBar: AppBar(
             title: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -305,7 +305,7 @@ class _EndOrder extends State<EndOrder> with SingleTickerProviderStateMixin {
       content: FormBuilder(
         key: _fbKey,
         child: FormBuilderDropdown(
-          attribute: "Point",
+          name: "Point",
           decoration: InputDecoration(labelText: "Point"),
           initialValue: distrPoints[0].id,
           hint: Text('Select Point'),

@@ -162,7 +162,7 @@ class _ItemsPage extends State<ItemsPage> with SingleTickerProviderStateMixin {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
         resizeToAvoidBottomInset: false,
-        resizeToAvoidBottomPadding: false,
+        //resizeToAvoidBottomPadding: false,
         body: Column(
           children: <Widget>[
             Container(

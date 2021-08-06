@@ -10,7 +10,6 @@ import 'package:mor_release/pages/items/items.tabs.dart';
 import 'package:mor_release/pages/messages/tickets.dart';
 import 'package:mor_release/scoped/connected.dart';
 import 'package:scoped_model/scoped_model.dart';
-
 import 'account/report.tabs.dart';
 
 class BottomNav extends StatefulWidget {
@@ -72,7 +71,8 @@ class _BottomNav extends State<BottomNav> with SingleTickerProviderStateMixin {
     return ScopedModelDescendant<MainModel>(
         builder: (BuildContext context, Widget child, MainModel model) {
       return Scaffold(
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: false,
+        //resizeToAvoidBottomPadding: false,
         // Appbar
         /*appBar: new AppBar(
         // Title

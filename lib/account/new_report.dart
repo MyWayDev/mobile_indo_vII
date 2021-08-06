@@ -60,7 +60,8 @@ class _NewReport extends State<NewReport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
+      //resizeToAvoidBottomPadding: false,
 
       //drawer: Container(),
       floatingActionButton: FloatingActionButton(

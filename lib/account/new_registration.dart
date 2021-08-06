@@ -172,7 +172,7 @@ class _NewReg extends State<NewReg> {
       builder: (BuildContext context, Widget child, MainModel model) {
         return Scaffold(
           resizeToAvoidBottomInset: false,
-          resizeToAvoidBottomPadding: false,
+          //resizeToAvoidBottomPadding: false,
           floatingActionButton: FloatingActionButton.extended(
               onPressed: null,
               label: StoreFloat(model),

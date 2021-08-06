@@ -130,7 +130,7 @@ class _LoginScreen extends State<LoginScreen> {
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: Colors.purple[300].withOpacity(0.5),
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(20.0),
@@ -141,17 +141,19 @@ class _LoginScreen extends State<LoginScreen> {
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 15.0),
+                          vertical: 10.0,
+                          horizontal: 15.0,
+                        ),
                         child: Icon(
                           Icons.vpn_key,
-                          color: Colors.pink,
+                          color: Colors.purple,
                           size: 21.0,
                         ),
                       ),
                       Container(
                         height: 28.0,
                         width: 1.0,
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.purple[100].withOpacity(0.5),
                         margin: const EdgeInsets.only(left: 00.0, right: 10.0),
                       ),
                       new Expanded(
@@ -190,7 +192,7 @@ class _LoginScreen extends State<LoginScreen> {
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: Colors.purple[200].withOpacity(0.5),
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(20.0),
@@ -199,18 +201,18 @@ class _LoginScreen extends State<LoginScreen> {
                       vertical: 8.0, horizontal: 20.0),
                   child: Row(
                     children: <Widget>[
-                      new Padding(
+                      Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: 10.0, horizontal: 15.0),
                         child: Icon(
                           Icons.lock_open,
-                          color: Colors.pink,
+                          color: Colors.purple,
                         ),
                       ),
                       Container(
                         height: 30.0,
                         width: 1.0,
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.purple[100].withOpacity(0.5),
                         margin: const EdgeInsets.only(left: 00.0, right: 10.0),
                       ),
                       Expanded(
@@ -245,7 +247,7 @@ class _LoginScreen extends State<LoginScreen> {
                               !_obscureText
                                   ? GroovinMaterialIcons.eye
                                   : GroovinMaterialIcons.eye_off,
-                              color: Colors.grey[400],
+                              color: Colors.purple[300].withOpacity(0.6),
                               size: 21))
                     ],
                   ),

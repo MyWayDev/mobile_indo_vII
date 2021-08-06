@@ -216,12 +216,13 @@ class _ShipmentAreaState extends State<ShipmentPlace>
                                 Icons.location_searching,
                                 size: 30,
                               ),
-                              attribute: "Point",
+                              name: "Point",
                               decoration: InputDecoration(
                                   labelText: "Titik Distribusi"),
                               initialValue: distrpoint,
                               hint: Text('Select Point'),
-                              validators: [FormBuilderValidators.required()],
+                              validator: FormBuilderValidators.compose(
+                                  [FormBuilderValidators.required(context)]),
                               onChanged: (value) async {
                                 print('dropdown value:$value');
                                 if (mounted) {
@@ -242,8 +243,8 @@ class _ShipmentAreaState extends State<ShipmentPlace>
                                   .toList(),
                             ),
                             shipmentAreas.length > 0
-                                ? FormBuilderCustomField(
-                                    attribute: "type",
+                                ? /*FormBuilderCustomField(
+                                    name: "type",
                                     validators: [
                                       FormBuilderValidators.required(),
                                     ],
@@ -283,7 +284,44 @@ class _ShipmentAreaState extends State<ShipmentPlace>
                                             },
                                           );
                                         }),
-                                  )
+                                  )*/
+                                FormBuilderField(
+                                    name: 'test',
+                                    validator: FormBuilderValidators.compose([
+                                      FormBuilderValidators.required(context)
+                                    ]),
+                                    initialValue: shipmentAreas.last.shipmentId,
+                                    enabled: _hasData ? true : false,
+                                    builder: (FormFieldState<dynamic> field) {
+                                      return DropdownButton(
+                                        icon: Icon(
+                                          Icons.location_on,
+                                          size: 32,
+                                          color: Colors.black,
+                                        ),
+                                        isExpanded: true,
+                                        items: shipmentAreas.map((option) {
+                                          return DropdownMenuItem(
+                                              child: Text(
+                                                "${option.shipmentAddress}/${option.shipmentName}",
+                                                softWrap: true,
+                                                style: TextStyle(fontSize: 13),
+                                              ),
+                                              value: option.shipmentId);
+                                        }).toList(),
+                                        value: field.value,
+                                        onChanged: (value) async {
+                                          //!try to change value from shipment area but
+                                          //! get shipmennt area to model.shipmenntarea;
+                                          field.didChange(value);
+                                          shipmentAreas.forEach(
+                                              (i) => print(i.shipmentAddress));
+                                          _valueChanged(true);
+                                          print('dropDown value:$value');
+                                          // int x = shipmentAreas.indexOf(value);
+                                        },
+                                      );
+                                    })
                                 : Container(),
                           ],
                         )),

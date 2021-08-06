@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -9,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:mor_release/scoped/connected.dart';
 import 'package:mor_release/widgets/color_loader_2.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:flutter_chips_input/flutter_chips_input.dart';
 
 class DocForm extends StatefulWidget {
   final String type;
@@ -92,100 +94,271 @@ class _DocFormState extends State<DocForm> {
                 children: <Widget>[
                   Text("${widget.type}"),
                   isDocBased
-                      ? FormBuilderCustomField(
-                          attribute: "doc",
-                          validators: [
-                            FormBuilderValidators.required(
-                                errorText: errorText),
-                          ],
-                          formField: FormField(
-                              onSaved: (value) {
-                                _newTicketData.docId = value;
-                              },
-                              //initialValue: docs[0].docId,
-                              // key: _formKey,
-                              enabled: true,
-                              builder: (FormFieldState<dynamic> field) {
-                                return ScopedModelDescendant<MainModel>(
-                                  builder: (BuildContext context, Widget child,
-                                      MainModel model) {
-                                    return InputDecorator(
-                                      textAlign: TextAlign.center,
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.only(
-                                            top: 2.0, bottom: 0.0),
-                                        border: InputBorder.none,
-                                        errorText: errorText,
-                                      ),
-                                      child: DropdownButton(
-                                        hint: Center(
-                                          child: docs.isNotEmpty
-                                              ? Text(
-                                                  "Nomor tagihan",
-                                                  style:
-                                                      TextStyle(fontSize: 13),
-                                                )
-                                              : Text('no tagihan'),
-                                        ),
-                                        isExpanded: true,
-                                        items: docs.map((option) {
-                                          return DropdownMenuItem(
-                                              child: Center(
-                                                child: Text(
-                                                  "${option.docId}" +
-                                                      "  ("
-                                                          '${option.docDate}' +
-                                                      ')  ' +
-                                                      "${formatter.format(option.totalVal)}" +
-                                                      " " +
-                                                      "Rp",
-                                                  style: TextStyle(
-                                                      backgroundColor:
-                                                          Colors.yellow[100],
-                                                      fontSize: 12.6,
-                                                      color: Colors.grey[800],
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ),
-                                              value: option.docId);
-                                        }).toList(),
-                                        value: field.value,
-                                        onChanged: (value) {
-                                          field.didChange(value);
+                      ? FormBuilderField(
+                          name: "doc",
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(context,
+                                errorText: errorText)
+                          ]),
+                          onSaved: (value) {
+                            _newTicketData.docId = value;
+                          },
+                          //initialValue: docs[0].docId,
+                          // key: _formKey,
+                          enabled: true,
+                          builder: (FormFieldState<dynamic> field) {
+                            return ScopedModelDescendant<MainModel>(
+                              builder: (BuildContext context, Widget child,
+                                  MainModel model) {
+                                return InputDecorator(
+                                  textAlign: TextAlign.center,
+                                  decoration: InputDecoration(
+                                    contentPadding:
+                                        EdgeInsets.only(top: 2.0, bottom: 0.0),
+                                    border: InputBorder.none,
+                                    errorText: errorText,
+                                  ),
+                                  child: DropdownButton(
+                                    hint: Center(
+                                      child: docs.isNotEmpty
+                                          ? Text(
+                                              "Nomor tagihan",
+                                              style: TextStyle(fontSize: 13),
+                                            )
+                                          : Text('no tagihan'),
+                                    ),
+                                    isExpanded: true,
+                                    items: docs.map((option) {
+                                      return DropdownMenuItem(
+                                          child: Center(
+                                            child: Text(
+                                              "${option.docId}" +
+                                                  "  ("
+                                                      '${option.docDate}' +
+                                                  ')  ' +
+                                                  "${formatter.format(option.totalVal)}" +
+                                                  " " +
+                                                  "Rp",
+                                              style: TextStyle(
+                                                  backgroundColor:
+                                                      Colors.yellow[100],
+                                                  fontSize: 12.6,
+                                                  color: Colors.grey[800],
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          value: option.docId);
+                                    }).toList(),
+                                    value: field.value,
+                                    onChanged: (value) {
+                                      field.didChange(value);
 
-                                          openItemChips(false);
-                                          isloading(true);
-                                          widget.docProblem != 'l'
-                                              ? getDocItems(value).then((i) {
-                                                  items = i;
-                                                  isloading(false);
-                                                  openItemChips(true);
-                                                  setState(() {
-                                                    isValid = _formKey
-                                                        .currentState
-                                                        .validate();
-                                                  });
-                                                })
-                                              : isloading(false);
-                                          isComment = true;
+                                      openItemChips(false);
+                                      isloading(true);
+                                      widget.docProblem != 'l'
+                                          ? getDocItems(value).then((i) {
+                                              items = i;
+                                              isloading(false);
+                                              openItemChips(true);
+                                              setState(() {
+                                                isValid = _formKey.currentState
+                                                    .validate();
+                                              });
+                                            })
+                                          : isloading(false);
+                                      isComment = true;
 
-                                          print("doc is valued = $isValid");
+                                      print("doc is valued = $isValid");
 
-                                          _newTicketData.docId = value;
-                                          // print('docId selected Value:$value');
+                                      _newTicketData.docId = value;
+                                      // print('docId selected Value:$value');
 
-                                          // int x = types.indexOf(value);
-                                        },
-                                      ),
-                                    );
-                                  },
+                                      // int x = types.indexOf(value);
+                                    },
+                                  ),
                                 );
-                              }),
-                        )
+                              },
+                            );
+                          })
                       : Container(),
                   isItemChips && widget.docProblem != 'l'
-                      ? FormBuilderChipsInput(
+                      ? ChipsInput(
+                          decoration: InputDecoration(labelText: "Barang"),
+                          // attribute: 'chips',
+                          // readonly: true,
+                          /* validators: [
+                            FormBuilderValidators.required(
+                                errorText: errorText),
+                            //)
+                            //FormBuilderValidators.max(150),
+                          ],*/
+
+                          //initialValue: [],
+                          maxChips: items.length,
+
+                          onChanged: (value) {
+                            setState(() {
+                              isValid = _formKey.currentState.validate();
+                            });
+
+                            print("chips is valued = $isValid");
+
+                            _newTicketData.items = value;
+                          },
+                          findSuggestions: (String query) {
+                            if (query.length != 0) {
+                              var lowercaseQuery = query.toLowerCase();
+                              return items.where((profile) {
+                                return profile.itemId
+                                        .toLowerCase()
+                                        .contains(query.toLowerCase()) ||
+                                    profile.itemId
+                                        .toLowerCase()
+                                        .contains(query.toLowerCase());
+                              }).toList(growable: false)
+                                ..sort((a, b) => a.itemId
+                                    .toLowerCase()
+                                    .indexOf(lowercaseQuery)
+                                    .compareTo(b.itemId
+                                        .toLowerCase()
+                                        .indexOf(lowercaseQuery)));
+                            } else {
+                              return const <TicketItem>[];
+                            }
+                          },
+
+                          chipBuilder: (context, state, profile) {
+                            return SingleChildScrollView(
+                              child: Flex(
+                                direction: Axis.horizontal,
+                                children: <Widget>[
+                                  Expanded(
+                                      // fit: FlexFit.tight,
+                                      flex: 1,
+                                      child: Container(
+                                          height: 45,
+                                          width: 200,
+                                          child: SizedBox(
+                                            height: 200,
+                                            child: ListView(
+                                              scrollDirection: Axis.horizontal,
+                                              shrinkWrap: true,
+                                              children: <Widget>[
+                                                Container(
+                                                  width: 210,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: <Widget>[
+                                                      profile.dmQty != 1
+                                                          ? GestureDetector(
+                                                              child: Icon(
+                                                                Icons.remove,
+                                                                size: 28,
+                                                                color: Colors
+                                                                    .red[900],
+                                                              ),
+                                                              onTap: () => setState(
+                                                                  () => profile
+                                                                      .dmQty--),
+                                                            )
+                                                          : Icon(
+                                                              Icons.remove,
+                                                              color: Colors
+                                                                  .transparent,
+                                                            ),
+                                                      InputChip(
+                                                        key: ObjectKey(profile),
+                                                        label: Text(
+                                                          profile.itemId,
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .pink[900],
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                        avatar: CircleAvatar(
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .yellow[100],
+                                                          child: Text(
+                                                            profile.dmQty
+                                                                .toString(),
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
+                                                        ),
+                                                        onDeleted: () =>
+                                                            state.deleteChip(
+                                                                profile),
+                                                        materialTapTargetSize:
+                                                            MaterialTapTargetSize
+                                                                .shrinkWrap,
+                                                      ),
+                                                      profile.dmQty <
+                                                              profile.qty
+                                                          ? GestureDetector(
+                                                              child: Icon(
+                                                                Icons.add,
+                                                                size: 28,
+                                                                color: Colors
+                                                                    .green,
+                                                              ),
+                                                              onTap: () => setState(
+                                                                  () => profile
+                                                                      .dmQty++))
+                                                          : Icon(
+                                                              Icons.add,
+                                                              color: Colors
+                                                                  .transparent,
+                                                            ),
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )))
+                                ],
+                              ),
+                            );
+                          },
+                          suggestionBuilder: (context, state, profile) {
+                            return SingleChildScrollView(
+                              child: ListTile(
+                                key: ObjectKey(profile),
+                                /* leading: CircleAvatar(
+                          backgroundImage: NetworkImage(profile.ticketType),
+                        ),*/
+                                title: Text(
+                                  profile.itemId,
+                                  style: TextStyle(
+                                      color: Colors.pink[900],
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Container(
+                                  child: Text(
+                                    "${profile.qty.toInt().toString()}" +
+                                        ' ' +
+                                        "Jumlah",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
+                                  ),
+                                ),
+                                onTap: () => state.selectSuggestion(profile),
+                              ),
+                            );
+                          },
+                        )
+                      /* FormBuilderChipsInput(
                           decoration: InputDecoration(labelText: "Barang"),
                           attribute: 'chips',
                           // readonly: true,
@@ -360,7 +533,7 @@ class _DocFormState extends State<DocForm> {
                               ),
                             );
                           },
-                        )
+                        )*/
                       : Container(),
                   isComment
                       ? FormBuilderTextField(
@@ -368,9 +541,9 @@ class _DocFormState extends State<DocForm> {
                           expands: false,
                           autocorrect: true,
                           //autovalidate: true,
-                          maxLengthEnforced: true,
+                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
                           maxLines: 4,
-                          attribute: "comment",
+                          name: "comment",
                           decoration: InputDecoration(
                             labelText: "Komentar",
                             /*border: OutlineInputBorder(
@@ -386,14 +559,14 @@ class _DocFormState extends State<DocForm> {
                           },
 
                           //  valueTransformer: (text) => num.tryParse(text),
-                          validators: [
-                            FormBuilderValidators.required(
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(context,
                                 errorText: errorText),
-                            FormBuilderValidators.minLength(3,
+                            FormBuilderValidators.minLength(context, 3,
                                 errorText: errorText),
-                            FormBuilderValidators.maxLength(300,
-                                errorText: 'Batas masuk tercapai'),
-                          ],
+                            FormBuilderValidators.maxLength(context, 300,
+                                errorText: 'Batas masuk tercapai')
+                          ]),
                         )
                       : Container(),
                 ],

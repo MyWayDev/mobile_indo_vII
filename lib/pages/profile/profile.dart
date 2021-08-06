@@ -82,7 +82,7 @@ class SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      resizeToAvoidBottomPadding: false,
+      // resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text(
           widget.model.user.name,

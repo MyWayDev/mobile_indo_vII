@@ -174,7 +174,8 @@ class _NodeEditState extends State<NodeEdit> {
         title: Text('Edit Member'),
       ),
       resizeToAvoidBottomInset: false,
-      resizeToAvoidBottomPadding: false,
+      // resizeToAvoidBottomPadding: false,
+
       body: ModalProgressHUD(
         child: buildVeri(context),
         inAsyncCall: _isloading,

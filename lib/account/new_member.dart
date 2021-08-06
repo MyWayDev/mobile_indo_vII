@@ -224,7 +224,8 @@ class _NewMemberPage extends State<NewMemberPage> {
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
+          //resizeToAvoidBottomPadding: false,
           body: ModalProgressHUD(
             child: Container(
               child: buildRegForm(context),

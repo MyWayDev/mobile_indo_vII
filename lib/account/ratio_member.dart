@@ -57,7 +57,7 @@ class _RatioReport extends State<RatioReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      resizeToAvoidBottomPadding: false,
+      //resizeToAvoidBottomPadding: false,
 
       //drawer: Container(),
       floatingActionButton: FloatingActionButton(
