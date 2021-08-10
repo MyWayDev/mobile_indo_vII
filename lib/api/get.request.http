@@ -56,9 +56,9 @@ Content-Type: application/json
     "BIRTH_DATE": "1974-07-31",
     "SM_ID": "048023071",// BANK ACCOUNT_NUM
     "ADDRESS": "JL.DR.SOETOMO 2 
-                NO16BRT/RW.001/003,KEL TRETEK,
+          NO16BRT/RW.001/003,KEL TRETEK,
                 KEC TULUNGAGUNG,
-                KAB TULUNGAGUNG-JAWA TIMUR",
+                   KAB TULUNGAGUNG-JAWA TIMUR",
     "HOLD_CRE": "0",
     "AP_AC_ID": "",// TAX
     "NOTES": "BCA BANK",// BANK NAME

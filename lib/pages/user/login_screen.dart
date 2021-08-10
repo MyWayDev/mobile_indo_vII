@@ -130,7 +130,7 @@ class _LoginScreen extends State<LoginScreen> {
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Colors.purple[300].withOpacity(0.5),
+                      color: Colors.pink[900].withOpacity(0.5),
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(20.0),
@@ -146,7 +146,7 @@ class _LoginScreen extends State<LoginScreen> {
                         ),
                         child: Icon(
                           Icons.vpn_key,
-                          color: Colors.purple,
+                          color: Colors.purple[300],
                           size: 21.0,
                         ),
                       ),
@@ -192,7 +192,7 @@ class _LoginScreen extends State<LoginScreen> {
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Colors.purple[200].withOpacity(0.5),
+                      color: Colors.pink[900].withOpacity(0.5),
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(20.0),
@@ -206,7 +206,7 @@ class _LoginScreen extends State<LoginScreen> {
                             vertical: 10.0, horizontal: 15.0),
                         child: Icon(
                           Icons.lock_open,
-                          color: Colors.purple,
+                          color: Colors.purple[300],
                         ),
                       ),
                       Container(
@@ -243,12 +243,12 @@ class _LoginScreen extends State<LoginScreen> {
                       ),
                       IconButton(
                           onPressed: _toggle,
-                          icon: Icon(
-                              !_obscureText
-                                  ? GroovinMaterialIcons.eye
-                                  : GroovinMaterialIcons.eye_off,
-                              color: Colors.purple[300].withOpacity(0.6),
-                              size: 21))
+                          icon: !_obscureText
+                              ? Icon(GroovinMaterialIcons.eye,
+                                  color: Colors.pink[900], size: 21)
+                              : Icon(GroovinMaterialIcons.eye_off,
+                                  color: Colors.pink[900].withOpacity(0.7),
+                                  size: 21))
                     ],
                   ),
                 ),
