@@ -194,14 +194,31 @@ class MainModel extends Model {
     return found;
   }
 
-  Future<DistrBonus> distrBonus(String distrId) async {
-    DistrBonus _distrBonus;
+  Future<List<DistrBonus>> distrBonusDesrv(String distrId) async {
+    List<DistrBonus> _distrBonusDesrvList;
 
     final response =
         await http.get('${settings.apiUrl}/deserve_bonus/$distrId');
     if (response.statusCode == 200) {
-      List _bonus = json.decode(response.body);
-      _distrBonus = DistrBonus.fromJson(_bonus.first);
+      final _bonus = json.decode(response.body) as List;
+      _distrBonusDesrvList = _bonus.map((e) => DistrBonus.fromJson(e)).toList();
+      // List<DistrBonus>  _distrBonusDesrvList.where((b) => b.status == null || b.status == '0');
+    } else {
+      _distrBonusDesrvList = [];
+    }
+    return _distrBonusDesrvList;
+  }
+
+  Future<DistrBonus> distrBonus(String distrId) async {
+    DistrBonus _distrBonus;
+    List<DistrBonus> _distrBonusDesrvList;
+    final response =
+        await http.get('${settings.apiUrl}/deserve_bonus/$distrId');
+    if (response.statusCode == 200) {
+      final _bonus = json.decode(response.body) as List;
+      _distrBonusDesrvList = _bonus.map((e) => DistrBonus.fromJson(e)).toList();
+      _distrBonus = _distrBonusDesrvList.firstWhere((b) => b.status != null);
+      //_distrBotonus = DistrBonus.fromJson(_bonus.first);
     } else {
       _distrBonus = null;
     }

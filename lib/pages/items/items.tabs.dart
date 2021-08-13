@@ -9,7 +9,6 @@ import 'package:mor_release/pages/profile/profile.dart';
 import 'package:mor_release/scoped/connected.dart';
 import 'package:mor_release/track/track.tabs.dart';
 import 'package:mor_release/widgets/playList.dart';
-import 'package:mor_release/widgets/youtube.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:badges/badges.dart';
 import '../../cat.dart';

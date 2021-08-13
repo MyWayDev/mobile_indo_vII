@@ -358,11 +358,12 @@ class Member {
 class DistrBonus {
   String distrId;
   String name;
+  String status;
   var bonus;
 
-  DistrBonus({this.distrId, this.name, this.bonus});
+  DistrBonus({this.distrId, this.name, this.bonus, this.status});
   toJson() {
-    return {"DISTR_ID": distrId, "ANAME": bonus};
+    return {"DISTR_ID": distrId, "NET_DESRV": bonus, "ANAME": name};
   }
 
   String distrBonusToJson(DistrBonus distrBonus) {
@@ -371,6 +372,9 @@ class DistrBonus {
   }
 
   factory DistrBonus.fromJson(Map<dynamic, dynamic> json) {
-    return DistrBonus(distrId: json['distr_id'], bonus: json['NET_DESRV']);
+    return DistrBonus(
+        distrId: json['distr_id'],
+        bonus: json['NET_DESRV'] ?? 0,
+        status: json['IS_TEMPLATE'] ?? '');
   }
 }

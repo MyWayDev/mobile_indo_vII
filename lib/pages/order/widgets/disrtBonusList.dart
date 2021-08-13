@@ -104,12 +104,6 @@ class _DistrBonusListState extends State<DistrBonusList> {
             ),
             Center(
               child: Text(
-                model.distrBonusList[index].name,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Center(
-              child: Text(
                 _formatBonus.format(model.distrBonusList[index].bonus),
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
               ),
