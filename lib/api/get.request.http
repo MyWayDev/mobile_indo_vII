@@ -11,10 +11,16 @@
 
 
 ###
-@var = 02001144
+@var = 03107443
+@vari = 02001144
+
+###
+GET https://mywayindoapi.azurewebsites.net/api/userinvoices/{{var}}
+###
+GET https://mywayindoapi.azurewebsites.net/api/userinvoices/{{var}}
 ###
 
-GET https://mywayindoapi.azurewebsites.net/api/deserve_bonus/{{var}}
+GET https://mywayindoapi.azurewebsites.net/api/userpending/{{vari}}
 
 ###
 
@@ -33,6 +39,10 @@ GET  https://{{host}}/api/areaid/152
 
 ###
 GET https://{{host}}/get_all_shipment_places/
+###
+GET https://{{host}}/userpending/{{var}}
+###
+GET https://{{host}}/bonus_history/{{var}}
 ###
 GET https://{{host}}/get_bank_info
 ###

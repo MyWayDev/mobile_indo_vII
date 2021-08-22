@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mor_release/models/user.dart';
+import 'package:mor_release/pages/order/widgets/disrtBonusList.dart';
 import 'package:mor_release/widgets/save_bulk_dialog.dart';
 import 'package:mor_release/widgets/save_dialog.dart';
 import 'package:mor_release/scoped/connected.dart';
@@ -29,6 +31,16 @@ class OrderSave extends StatelessWidget {
   double bulkOrderTotal(MainModel model) {
     double finalBulkOrderSum = model.bulkOrderSum() + model.settings.adminFee;
     return finalBulkOrderSum;
+  }
+
+  double bonusDeductSum(MainModel model) {
+    double sum = 0;
+    if (model.distrBonusList.isNotEmpty) {
+      for (var i = 0; i < model.distrBonusList.length; i++) {
+        sum += model.distrBonusList[i].bonus;
+      }
+    }
+    return sum;
   }
 
   @override
@@ -77,7 +89,7 @@ class OrderSave extends StatelessWidget {
                                           'Pemotongan Bonus',
                                           style: TextStyle(
                                               fontSize: 13,
-                                              color: Colors.deepOrange[400]),
+                                              color: Colors.grey[700]),
                                           //  textDirection: TextDirection.rtl,
                                         ),
                                         Row(
@@ -143,20 +155,19 @@ class OrderSave extends StatelessWidget {
                                     ),
                                     Text(
                                       '-' +
-                                          formatter.format(
-                                              model.distrBonusList[0].bonus) +
+                                          formatter
+                                              .format(bonusDeductSum(model)) +
                                           ' Rp',
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: Colors.deepOrangeAccent[400],
+                                        color: Colors.grey[700],
                                       ),
                                     ),
                                     Text(
-                                      formatter.format((orderTotal(model) -
-                                                  model.distrBonusList[0]
-                                                          .bonus *
-                                                      1.1) +
-                                              courierFee) +
+                                      formatter.format(((orderTotal(model) -
+                                                      bonusDeductSum(model)) *
+                                                  1.1) +
+                                              courierFee * 1.01) +
                                           ' Rp',
                                       style: TextStyle(
                                           fontSize: 13,
@@ -296,8 +307,8 @@ class OrderSave extends StatelessWidget {
                                     ),
                                     Text(
                                       '-' +
-                                          formatter.format(
-                                              model.distrBonusList[0].bonus) +
+                                          formatter
+                                              .format(bonusDeductSum(model)) +
                                           ' Rp',
                                       style: TextStyle(
                                           fontSize: 12,
@@ -305,10 +316,9 @@ class OrderSave extends StatelessWidget {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      formatter.format((bulkOrderTotal(model) -
-                                                  model.distrBonusList[0]
-                                                          .bonus *
-                                                      1.1) +
+                                      formatter.format(((bulkOrderTotal(model) -
+                                                      bonusDeductSum(model)) *
+                                                  1.1) +
                                               bulkOrderCourierFee(model)) +
                                           ' Rp',
                                       style: TextStyle(

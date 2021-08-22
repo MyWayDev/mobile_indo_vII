@@ -124,6 +124,7 @@ class _BottomNav extends State<BottomNav> with SingleTickerProviderStateMixin {
               ),
               Tab(
                   child: BadgeIconButton(
+                hideZeroCount: true,
                 itemCount: _msgCount > 0 ? _msgCount : 0,
                 badgeColor: Colors.deepPurple[300],
                 badgeTextColor: Colors.white,

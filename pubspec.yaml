@@ -64,6 +64,7 @@ dependencies:
   youtube_player_flutter: ^7.0.0+7 #error Flutter tried to create the file `android/settings_aar.gradle`, but failed.
   dropdown_search: ^0.6.3 #
   blinking_text: ^1.0.1+2 #
+  flutter_multiselect: ^1.0.0
 
 #dependency_overrides:
 #flutteintl: ^0.17.0-nullsafety.2

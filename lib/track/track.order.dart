@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:intl/intl.dart';
@@ -201,7 +202,7 @@ class _TrackOrder extends State<TrackOrder> {
                 item.itemId,
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               ),
-              title: Text(item.itemName, style: TextStyle(fontSize: 13)),
+              title: Text(item.itemName, style: TextStyle(fontSize: 12)),
               trailing: Text(
                 item.qty.round().toString(),
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
@@ -270,6 +271,29 @@ class _TrackOrder extends State<TrackOrder> {
         key: PageStorageKey<Sorder>(sos[index]),
         title: ListTile(
           leading: IconButton(
+              highlightColor: Colors.amber,
+              icon: Icon(
+                Icons.cancel_outlined,
+                color: Colors.amberAccent,
+                size: 32,
+              ),
+              onPressed: () async {
+                int wait = await getTimeDiff(model, index);
+                if (wait > 5) {
+                  _deleteSoDialog(
+                      firstSorder[index].soItems,
+                      sos[index].docId,
+                      sos[index].distrId,
+                      model,
+                      "Barang yang sudah dipesan akan dibatalkan dan order akan dihapus",
+                      false,
+                      sos[index].storeId,
+                      sos[index].soType);
+                } else {
+                  _bottomSheetAlert(model, wait);
+                }
+              }),
+          /*leading: IconButton(
               disabledColor: Colors.transparent,
               icon: Icon(
                 Icons.delete_forever,
@@ -291,7 +315,7 @@ class _TrackOrder extends State<TrackOrder> {
                 } else {
                   _bottomSheetAlert(model, wait);
                 }
-              }),
+              }),*/
           title: Container(
             child: Column(
               children: <Widget>[
@@ -299,18 +323,19 @@ class _TrackOrder extends State<TrackOrder> {
                 Text(
                   sos[index].distrName,
                   style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.red[50]),
+                      color: Colors.black87),
                 ),
                 Divider(
                   height: 3.0,
                   indent: 0,
                   color: Colors.white,
-                )
+                ),
               ],
             ),
           ),
+
           /* trailing: !model.cartLocked
                 ? IconButton(
                     icon: Icon(
@@ -376,13 +401,13 @@ class _TrackOrder extends State<TrackOrder> {
             child: Column(
               children: <Widget>[
                 CustomAppBar("Pelacakan order tertunda"),
-                Container(),
+                // Container(),
                 Expanded(
                   child: ListView.builder(
                       itemCount: firstSorder.length,
                       itemBuilder: (BuildContext context, int index) {
                         return Card(
-                          elevation: 8,
+                          elevation: 2,
                           color: firstSorder[index].soType == 'CA' &&
                                   firstSorder[index].soItems.first.itemId !=
                                       '99m'
@@ -428,7 +453,7 @@ class _TrackOrder extends State<TrackOrder> {
                                         firstSorder[index].distrId,
                                         style: TextStyle(
                                             fontStyle: FontStyle.italic,
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             color: Colors.white),
                                       ),
                                     ],
@@ -451,7 +476,7 @@ class _TrackOrder extends State<TrackOrder> {
                                         firstSorder[index].docDate,
                                         style: TextStyle(
                                             fontStyle: FontStyle.italic,
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             color: Colors.white),
                                       ),
                                     ],
@@ -467,143 +492,184 @@ class _TrackOrder extends State<TrackOrder> {
                                   backgroundColor: Colors.pink[400],
                                   key: PageStorageKey<Sorder>(
                                       firstSorder[index]),
-                                  title: ListTile(
-                                    leading: Container(
-                                      child: Column(
-                                        children: <Widget>[
-                                          Text(firstSorder[index].docId,
-                                              style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.yellow[100])),
-                                          firstSorder[index]
-                                                          .soItems
-                                                          .first
-                                                          .itemId ==
-                                                      '99m' &&
-                                                  firstSorder[index].soType ==
-                                                      'CA'
-                                              ? Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: <Widget>[
-                                                    Icon(
-                                                      GroovinMaterialIcons
-                                                          .account_plus,
-                                                    ),
-                                                    SizedBox(width: 5),
-                                                    Icon(
-                                                      GroovinMaterialIcons
-                                                          .cash_multiple,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ],
-                                                )
-                                              : firstSorder[index].soType ==
-                                                          'CA' &&
-                                                      firstSorder[index]
-                                                              .soItems
-                                                              .first
-                                                              .itemId !=
-                                                          '99m'
-                                                  ? Icon(
-                                                      GroovinMaterialIcons
-                                                          .cash_multiple,
-                                                      color: Colors.white,
-                                                    )
-                                                  : firstSorder[index].soType ==
-                                                              'CR' &&
-                                                          firstSorder[index]
-                                                                  .soItems
-                                                                  .first
-                                                                  .itemId !=
-                                                              '99m'
-                                                      ? Icon(
-                                                          Icons.local_shipping,
-                                                        )
-                                                      : firstSorder[index]
-                                                                      .soItems
-                                                                      .first
-                                                                      .itemId ==
-                                                                  '99m' &&
-                                                              firstSorder[index]
-                                                                      .soType ==
-                                                                  'CR'
-                                                          ? Row(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .center,
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: <
-                                                                  Widget>[
-                                                                Icon(
-                                                                  GroovinMaterialIcons
-                                                                      .account_plus,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                                SizedBox(
-                                                                    width: 5),
-                                                                Icon(
-                                                                  Icons
-                                                                      .local_shipping,
-                                                                ),
-                                                              ],
-                                                            )
-                                                          : Container()
-                                        ],
+                                  title: ElevatedButton(
+                                      style: ButtonStyle(
+                                        elevation:
+                                            MaterialStateProperty.all<double>(
+                                                12),
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.pink[600]),
+                                        foregroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.white),
+                                        overlayColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.grey),
                                       ),
-                                    ),
-                                    trailing: Container(
-                                      child: Column(
-                                        children: <Widget>[
-                                          firstSorder[index].totalBonus > 0
-                                              ? Column(children: [
-                                                  Text(
-                                                    'Rp ${(formatter.format(addPpnTax(index)))}' +
-                                                        ' ' +
-                                                        ' - Rp ${(formatter.format(firstSorder[index].totalBonus))}',
+                                      onPressed: () =>
+                                          showAboutDialog(context: context),
+                                      child: Padding(
+                                        padding: EdgeInsets.only(top: 8),
+                                        child: ListTile(
+                                          subtitle: Text(''),
+                                          isThreeLine: true,
+                                          leading: Container(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.max,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                Text(firstSorder[index].docId,
                                                     style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.green[200],
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    'Rp ${(formatter.format(addPpnTax(index) - firstSorder[index].totalBonus))}',
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.red[50],
-                                                      fontSize: 13,
-                                                    ),
-                                                  )
-                                                ])
-                                              : Text(
-                                                  'Rp ${(formatter.format(addPpnTax(index)))}',
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors
+                                                            .amberAccent)),
+                                                firstSorder[index]
+                                                                .soItems
+                                                                .first
+                                                                .itemId ==
+                                                            '99m' &&
+                                                        firstSorder[index]
+                                                                .soType ==
+                                                            'CA'
+                                                    ? Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: <Widget>[
+                                                          Icon(
+                                                            GroovinMaterialIcons
+                                                                .account_plus,
+                                                          ),
+                                                          SizedBox(width: 5),
+                                                          Icon(
+                                                            GroovinMaterialIcons
+                                                                .cash_multiple,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ],
+                                                      )
+                                                    : firstSorder[index]
+                                                                    .soType ==
+                                                                'CA' &&
+                                                            firstSorder[index]
+                                                                    .soItems
+                                                                    .first
+                                                                    .itemId !=
+                                                                '99m'
+                                                        ? Icon(
+                                                            GroovinMaterialIcons
+                                                                .cash_multiple,
+                                                            color: Colors.white,
+                                                          )
+                                                        : firstSorder[index]
+                                                                        .soType ==
+                                                                    'CR' &&
+                                                                firstSorder[index]
+                                                                        .soItems
+                                                                        .first
+                                                                        .itemId !=
+                                                                    '99m'
+                                                            ? Icon(
+                                                                Icons
+                                                                    .local_shipping,
+                                                              )
+                                                            : firstSorder[index]
+                                                                            .soItems
+                                                                            .first
+                                                                            .itemId ==
+                                                                        '99m' &&
+                                                                    firstSorder[index]
+                                                                            .soType ==
+                                                                        'CR'
+                                                                ? Row(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .center,
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: <
+                                                                        Widget>[
+                                                                      Icon(
+                                                                        GroovinMaterialIcons
+                                                                            .account_plus,
+                                                                        color: Colors
+                                                                            .white,
+                                                                      ),
+                                                                      SizedBox(
+                                                                          width:
+                                                                              5),
+                                                                      Icon(
+                                                                        Icons
+                                                                            .local_shipping,
+                                                                      ),
+                                                                    ],
+                                                                  )
+                                                                : Container()
+                                              ],
+                                            ),
+                                          ),
+                                          trailing: Container(
+                                            child: Column(
+                                              children: <Widget>[
+                                                double.parse(firstSorder[index]
+                                                            .totalBonus) >
+                                                        0
+                                                    ? Column(children: [
+                                                        Text(
+                                                          'Rp ${(formatter.format(addPpnTax(index)))}' +
+                                                              ' ' +
+                                                              '- Rp ${(formatter.format(double.parse(firstSorder[index].totalBonus)))}',
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Colors
+                                                                .green[200],
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'Rp ${(formatter.format(addPpnTax(index) - double.parse(firstSorder[index].totalBonus)))}',
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.red[50],
+                                                            fontSize: 12,
+                                                          ),
+                                                        )
+                                                      ])
+                                                    : Text(
+                                                        'Rp ${(formatter.format(addPpnTax(index)))}',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color:
+                                                              Colors.red[100],
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                Text(
+                                                  'Bp ${firstSorder[index].soBp}',
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
-                                                    color: Colors.red[100],
-                                                    fontSize: 13,
+                                                    color: Colors.blue[100],
+                                                    fontSize: 12,
                                                   ),
-                                                ),
-                                          Text(
-                                            'Bp ${firstSorder[index].soBp}',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.blue[100],
-                                              fontSize: 13,
+                                                )
+                                              ],
                                             ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                          ),
+                                        ),
+                                      )),
                                   children: [
                                     _buildSorder(firstSorder, index, model)
                                   ]

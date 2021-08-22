@@ -56,6 +56,7 @@ class MainModel extends Model {
   bool modify = false;
   String token = '';
   List<DistrBonus> distrBonusList = [];
+  List<DistrBonus> desrvBonusList = [];
   bool loading = false;
   bool bulkLoading = false;
   bool isBalanceChecked = true;
@@ -194,14 +195,35 @@ class MainModel extends Model {
     return found;
   }
 
-  Future<List<DistrBonus>> distrBonusDesrv(String distrId) async {
-    List<DistrBonus> _distrBonusDesrvList;
+  void deleteDistrBonus(int i, BuildContext context) {
+    distrBonusList.remove(distrBonusList[i]);
+    distrBonusList.isEmpty ? Navigator.of(context).pop() : null;
+    notifyListeners();
+  }
 
+  double distrBonusDeductTotal() {
+    double x = 0;
+    for (DistrBonus i in distrBonusList) {
+      x += i.bonus;
+    }
+    notifyListeners();
+    return x;
+  }
+
+  Future<List<DistrBonus>> distrBonusDesrv(String distrId) async {
+    List<DistrBonus> _distrBonusDesrvList = [];
+    List<DistrBonus> _removeList = [];
     final response =
         await http.get('${settings.apiUrl}/deserve_bonus/$distrId');
     if (response.statusCode == 200) {
       final _bonus = json.decode(response.body) as List;
       _distrBonusDesrvList = _bonus.map((e) => DistrBonus.fromJson(e)).toList();
+      for (DistrBonus d in distrBonusList) {
+        _distrBonusDesrvList.forEach((e) {
+          if (e.bonus == d.bonus) _removeList.add(e);
+        });
+      }
+      _distrBonusDesrvList.removeWhere((e) => _removeList.contains(e));
       // List<DistrBonus>  _distrBonusDesrvList.where((b) => b.status == null || b.status == '0');
     } else {
       _distrBonusDesrvList = [];
@@ -209,7 +231,7 @@ class MainModel extends Model {
     return _distrBonusDesrvList;
   }
 
-  Future<DistrBonus> distrBonus(String distrId) async {
+  /*Future<DistrBonus> distrBonus(String distrId) async {
     DistrBonus _distrBonus;
     List<DistrBonus> _distrBonusDesrvList;
     final response =
@@ -223,7 +245,7 @@ class MainModel extends Model {
       _distrBonus = null;
     }
     return _distrBonus;
-  }
+  }*/
 
   updateCatToFalse(int itemId) {
     DatabaseReference catF = FirebaseDatabase.instance.reference().child(
@@ -749,21 +771,6 @@ class MainModel extends Model {
     promoOrderList.clear();
     itemorderlist.remove(itemorderlist[i]);
     notifyListeners();
-  }
-
-  void deleteDistrBonus(int i, BuildContext context) {
-    distrBonusList.remove(distrBonusList[i]);
-    distrBonusList.isEmpty ? Navigator.of(context).pop() : null;
-    notifyListeners();
-  }
-
-  double distrBonusDeductTotal() {
-    double x = 0;
-    for (DistrBonus i in distrBonusList) {
-      x += i.bonus;
-    }
-    notifyListeners();
-    return x;
   }
 
 //!--------*

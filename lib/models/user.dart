@@ -73,7 +73,7 @@ class User {
         name = snapshot.value["name"] ?? '',
         distrId = snapshot.value["distrId"],
         email = snapshot.value["email"] ?? '',
-        isAllowed = snapshot.value["IsAllowed"],
+        isAllowed = snapshot.value["IsAllowed"] ?? '',
         isleader = snapshot.value["isleader"],
         areaId = snapshot.value["areaId"],
         token = snapshot.value["token"],
@@ -358,12 +358,13 @@ class Member {
 class DistrBonus {
   String distrId;
   String name;
+  String period;
   String status;
   var bonus;
 
-  DistrBonus({this.distrId, this.name, this.bonus, this.status});
+  DistrBonus({this.distrId, this.name, this.bonus, this.status, this.period});
   toJson() {
-    return {"DISTR_ID": distrId, "NET_DESRV": bonus, "ANAME": name};
+    return {"DISTR_ID": distrId, "ANAME": bonus, "ADD_DATE": period};
   }
 
   String distrBonusToJson(DistrBonus distrBonus) {
@@ -373,8 +374,9 @@ class DistrBonus {
 
   factory DistrBonus.fromJson(Map<dynamic, dynamic> json) {
     return DistrBonus(
-        distrId: json['distr_id'],
+        distrId: json['DISTR_ID'],
         bonus: json['NET_DESRV'] ?? 0,
-        status: json['IS_TEMPLATE'] ?? '');
+        status: json['IS_TEMPLATE'] ?? '',
+        period: json['MONTH'] ?? '');
   }
 }

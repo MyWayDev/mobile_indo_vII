@@ -1,9 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
-import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:mor_release/models/user.dart';
 import 'package:mor_release/pages/order/widgets/disrtBonusList.dart';
 import 'package:mor_release/scoped/connected.dart';
 
@@ -17,12 +15,12 @@ class BonusDeduct extends StatefulWidget {
 
 class _BonusDeductState extends State<BonusDeduct> {
   TextEditingController controller = new TextEditingController();
-  User _nodeData;
+  //User _nodeData;
   bool isTyping;
   bool veri = false;
   bool _isloading = false;
-  DistrBonus _userBonus;
-  List<DistrBonus> _userBonusList;
+  //DistrBonus _userBonus;
+
   final _formatBonus = new NumberFormat("#,###,###");
 
   void isloading(bool i) {
@@ -67,8 +65,277 @@ class _BonusDeductState extends State<BonusDeduct> {
       children: <Widget>[
         ConstrainedBox(
           constraints: BoxConstraints(maxHeight: 33),
-          child: Container(height: 34.0, child: bonusDesrvList(context)
-              /*RaisedButton(
+          child: Container(child: bonusDesrvList(context)),
+        ),
+      ],
+    );
+  }
+
+  Widget bonusDesrvList(BuildContext context) {
+    return ModalProgressHUD(
+      inAsyncCall: _isloading,
+      opacity: 0.3,
+      progressIndicator: LinearProgressIndicator(
+        color: Colors.amber,
+        backgroundColor: Colors.transparent,
+      ),
+      child: RaisedButton(
+        color: Colors.pink,
+        onPressed: () async {
+          isloading(true);
+          widget.model.desrvBonusList =
+              await widget.model.distrBonusDesrv(widget.model.userInfo.distrId);
+          isloading(false);
+
+          widget.model.desrvBonusList.isEmpty
+              ? showDialog(
+                  barrierDismissible: true,
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: Text(
+                      'Bonus Sudah Terpakai',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                  ),
+                )
+              : await showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return StatefulBuilder(builder: (context, setState) {
+                      return AlertDialog(
+                          actions: [
+                            IconButton(
+                                highlightColor: Colors.amber,
+                                onPressed: () => Navigator.of(context).pop(),
+                                icon: Icon(
+                                  Icons.close_outlined,
+                                  size: 30,
+                                  color: Colors.red,
+                                ))
+                          ],
+                          backgroundColor: Color(0xFF303030),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          content: Container(
+                            width: 290,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Container(
+                                padding: EdgeInsets.only(left: 1, right: 1),
+                                height: 290,
+                                width: 120,
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.only(top: 8, bottom: 8),
+                                        child: Text(
+                                          'Pembayaran Menggunakan Bonus',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 13),
+                                        ),
+                                      ),
+                                      Flexible(
+                                        child: Scrollbar(
+                                          child: ListView.builder(
+                                            itemCount: widget
+                                                .model.desrvBonusList.length,
+                                            itemBuilder: (context, i) {
+                                              return ElevatedButton(
+                                                style: widget
+                                                            .model
+                                                            .desrvBonusList[i]
+                                                            .status ==
+                                                        '1'
+                                                    ? ButtonStyle(
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .purple),
+                                                        foregroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .white),
+                                                        overlayColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .grey),
+                                                      )
+                                                    : ButtonStyle(
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .grey),
+                                                        foregroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .white),
+                                                        overlayColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .grey),
+                                                      ),
+                                                onPressed: widget
+                                                            .model
+                                                            .desrvBonusList[i]
+                                                            .status ==
+                                                        '1'
+                                                    ? () {
+                                                        widget.model
+                                                            .distrBonusList
+                                                            .add(widget.model
+                                                                .desrvBonusList[i]);
+                                                        widget.model
+                                                            .desrvBonusList
+                                                            .remove(widget.model
+                                                                .desrvBonusList[i]);
+                                                        setState(() {});
+                                                        widget
+                                                                .model
+                                                                .desrvBonusList
+                                                                .isEmpty
+                                                            ? Navigator.of(
+                                                                    context)
+                                                                .pop()
+                                                            : null;
+                                                      }
+                                                    : null,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Center(
+                                                      child: Text(
+                                                        widget
+                                                            .model
+                                                            .desrvBonusList[i]
+                                                            .period,
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87,
+                                                            fontSize: 13,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
+                                                    Center(
+                                                      child: Text(
+                                                        _formatBonus.format(widget
+                                                                .model
+                                                                .desrvBonusList[
+                                                                    i]
+                                                                .bonus) +
+                                                            ' ' +
+                                                            'Rp',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 13,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      )
+                                    ])),
+                          ));
+                    });
+                  });
+        },
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(80.0)),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.pink[800], Colors.purple[800]],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          child: Stack(children: <Widget>[
+            Container(
+              constraints: BoxConstraints(maxWidth: 250.0, minHeight: 34.0),
+              alignment: Alignment.bottomRight,
+              child: widget.model.distrBonusList.isNotEmpty
+                  ? Text(
+                      _formatBonus
+                              .format(widget.model.distrBonusDeductTotal()) +
+                          ' ' +
+                          'Rp',
+                      style: TextStyle(
+                          color: Colors.greenAccent,
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.bold),
+                    )
+                  : Container(),
+            ),
+            Container(
+              constraints: BoxConstraints(maxWidth: 250.0, minHeight: 30.0),
+              alignment: Alignment.center,
+              child: Text(
+                "Pemotongan Bonus",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            Container(
+              constraints: BoxConstraints(maxWidth: 100.0, minHeight: 32.0),
+              alignment: Alignment.topLeft,
+              child: widget.model.distrBonusList.isNotEmpty
+                  ? BadgeIconButton(
+                      itemCount: widget.model.distrBonusList.length,
+                      icon: Icon(
+                        Icons.money_rounded,
+                        color: Colors.blue[50],
+                        size: 28,
+                      ),
+                      badgeColor: Colors.green,
+                      badgeTextColor: Colors.white,
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => DistrBonusList(),
+                        );
+                      },
+                    )
+                  : Container(),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+ /*RaisedButton(
               onPressed: () async {
                 _userBonus = await widget.model
                     .distrBonus(widget.model.userInfo.distrId);
@@ -221,195 +488,7 @@ class _BonusDeductState extends State<BonusDeduct> {
                 ]),
               ),
             ),*/
-              ),
-        ),
-      ],
-    );
-  }
-
-  Widget bonusDesrvList(BuildContext context) {
-    return ModalProgressHUD(
-      inAsyncCall: _isloading,
-      opacity: 0.3,
-      progressIndicator: LinearProgressIndicator(),
-      child: RaisedButton(
-        onPressed: () async {
-          _userBonusList =
-              await widget.model.distrBonusDesrv(widget.model.userInfo.distrId);
-          /* DistrBonus userBonus = DistrBonus(
-              distrId: _userBonus.distrId,
-              name: widget.model.userInfo.name,
-              status: _userBonus.status,
-              bonus: _userBonus.bonus);
-          if (_userBonus != null) {
-            !widget.model.getDistrBonus(widget.model.userInfo.distrId) &&
-                    userBonus != null &&
-                    userBonus.bonus > 0*/
-          _userBonusList.isNotEmpty
-              ? showDialog(
-                  context: context,
-                  barrierDismissible: true,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      backgroundColor: Color(0xFF303030),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      content: Container(
-                        width: 165,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.only(left: 1, right: 1),
-                          height: 355,
-                          width: 65,
-                          child: Scrollbar(
-                              child: ListView.builder(
-                                  itemCount: _userBonusList.length,
-                                  itemBuilder: (context, i) {
-                                    return ElevatedButton(
-                                      style: _userBonusList[i].status == '1'
-                                          ? ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(Colors.purple),
-                                              foregroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(Colors.white),
-                                              overlayColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(Colors.grey),
-                                            )
-                                          : ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(Colors.grey),
-                                              foregroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(Colors.white),
-                                              overlayColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(Colors.grey),
-                                            ),
-                                      onPressed: _userBonusList[i].status == '1'
-                                          ? () {
-                                              widget.model.distrBonusList
-                                                  .add(_userBonusList[i]);
-                                              Navigator.of(context).pop();
-                                            }
-                                          : null,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.max,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Center(
-                                            child: Text(
-                                              _formatBonus.format(
-                                                      _userBonusList[i].bonus) +
-                                                  ' ' +
-                                                  'Rp',
-                                              style: TextStyle(fontSize: 13),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  })),
-                        ),
-                      ),
-                    );
-                  })
-              : showDialog(
-                  barrierDismissible: true,
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: Text('Bonus Sudah Terpakai'),
-                  ),
-                );
-          /*} else {
-            showDialog(
-              barrierDismissible: true,
-              context: context,
-              builder: (_) => AlertDialog(
-                title: Text('Bonus Sudah Terpakai'),
-              ),R
-            );
-          }*/
-        },
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(80.0)),
-        padding: EdgeInsets.all(2.0),
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.pink[800], Colors.purple[800]],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            borderRadius: BorderRadius.circular(30.0),
-          ),
-          child: Stack(children: <Widget>[
-            Container(
-              constraints: BoxConstraints(maxWidth: 250.0, minHeight: 34.0),
-              alignment: Alignment.bottomRight,
-              child: widget.model.distrBonusList.isNotEmpty
-                  ? Text(
-                      _formatBonus
-                              .format(widget.model.distrBonusDeductTotal()) +
-                          ' ' +
-                          'Rp' +
-                          ' ',
-                      style: TextStyle(
-                          color: Colors.greenAccent,
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.bold),
-                    )
-                  : Container(),
-            ),
-            Container(
-              constraints: BoxConstraints(maxWidth: 250.0, minHeight: 34.0),
-              alignment: Alignment.center,
-              child: Text(
-                "Pemotongan Bonus..",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            Container(
-              constraints: BoxConstraints(maxWidth: 100.0, minHeight: 34.0),
-              alignment: Alignment.topLeft,
-              child: widget.model.distrBonusList.isNotEmpty
-                  ? BadgeIconButton(
-                      itemCount: widget.model.distrBonusList.length,
-                      icon: Icon(
-                        GroovinMaterialIcons.cash,
-                        color: Colors.white,
-                        size: 27.5,
-                      ),
-                      badgeColor: Colors.green,
-                      badgeTextColor: Colors.white,
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => DistrBonusList(),
-                        );
-                      },
-                    )
-                  : Container(),
-            ),
-          ]),
-        ),
-      ),
-    );
-  }
-  /* Widget nodeDialog(BuildContext context) {
+            /* Widget nodeDialog(BuildContext context) {
     return ModalProgressHUD(
       inAsyncCall: _isloading,
       opacity: 0.3,
@@ -600,4 +679,3 @@ class _BonusDeductState extends State<BonusDeduct> {
       ),
     );
   }*/
-}
