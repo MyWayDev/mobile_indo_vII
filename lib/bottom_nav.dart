@@ -35,6 +35,7 @@ class _BottomNav extends State<BottomNav> with SingleTickerProviderStateMixin {
   DatabaseReference databaseReference;
 
   int _msgCount = 0;
+
   @override
   void initState() {
     databaseReference = database.reference().child(path);
@@ -70,6 +71,7 @@ class _BottomNav extends State<BottomNav> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainModel>(
         builder: (BuildContext context, Widget child, MainModel model) {
+      fillDesrvBonusCheck(model);
       return Scaffold(
         resizeToAvoidBottomInset: false,
         //resizeToAvoidBottomPadding: false,
@@ -86,7 +88,8 @@ class _BottomNav extends State<BottomNav> with SingleTickerProviderStateMixin {
           // Add tabs as widgets
           children: <Widget>[
             ItemsTabs(),
-            NewReg(model),
+            NewMemberPage(), // old new member registration form.
+            //NewReg(model), updated new registration form.
             Tickets(
               distrId: int.parse(model.user.key),
             ),
@@ -145,6 +148,10 @@ class _BottomNav extends State<BottomNav> with SingleTickerProviderStateMixin {
         ),
       );
     });
+  }
+
+  void fillDesrvBonusCheck(MainModel model) async {
+    model.desrvBonusList = await model.distrBonusDesrv(model.userInfo.distrId);
   }
 
   void _onMessageEntryAdded(Event event) {

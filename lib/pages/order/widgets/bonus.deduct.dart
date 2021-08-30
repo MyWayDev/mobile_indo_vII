@@ -64,7 +64,7 @@ class _BonusDeductState extends State<BonusDeduct> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: 33),
+          constraints: BoxConstraints(maxHeight: 23),
           child: Container(child: bonusDesrvList(context)),
         ),
       ],
@@ -80,7 +80,7 @@ class _BonusDeductState extends State<BonusDeduct> {
         backgroundColor: Colors.transparent,
       ),
       child: RaisedButton(
-        color: Colors.pink,
+        color: Colors.white.withOpacity(0.80),
         onPressed: () async {
           isloading(true);
           widget.model.desrvBonusList =
@@ -268,11 +268,11 @@ class _BonusDeductState extends State<BonusDeduct> {
                   });
         },
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(80.0)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(90.0)),
         child: Ink(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.pink[800], Colors.purple[800]],
+              colors: [Colors.pink[900], Colors.purple[800]],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -280,7 +280,7 @@ class _BonusDeductState extends State<BonusDeduct> {
           ),
           child: Stack(children: <Widget>[
             Container(
-              constraints: BoxConstraints(maxWidth: 250.0, minHeight: 34.0),
+              constraints: BoxConstraints(maxWidth: 220.0, maxHeight: 20.0),
               alignment: Alignment.bottomRight,
               child: widget.model.distrBonusList.isNotEmpty
                   ? Text(
@@ -296,14 +296,14 @@ class _BonusDeductState extends State<BonusDeduct> {
                   : Container(),
             ),
             Container(
-              constraints: BoxConstraints(maxWidth: 250.0, minHeight: 30.0),
+              constraints: BoxConstraints(maxWidth: 220.0, maxHeight: 20.0),
               alignment: Alignment.center,
               child: Text(
                 "Pemotongan Bonus",
                 textAlign: TextAlign.left,
                 style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white70,
+                    color: Colors.amberAccent[100],
                     fontWeight: FontWeight.bold),
               ),
             ),

@@ -44,6 +44,7 @@ class _ItemsPage extends State<ItemsPage> with SingleTickerProviderStateMixin {
     //!TODO ADD QUERY TO FILTER PRODUCTS NOT IN CATALOGE..
     subAdd = query.onChildAdded.listen(_onItemEntryAdded);
     subChanged = query.onChildChanged.listen(_onItemEntryChanged);
+
     super.initState();
   }
 

@@ -29,21 +29,14 @@ class _BankDropdownState extends State<BankDropdown> {
     super.dispose();
   }
 
-  int _ibank(String _bank) {
-    int _index;
+  Bank _ibank(String _bank) {
+    Bank bankN;
     if (_bank.length > 1) {
-      var i = banks.where((b) => b.bankId == _bank);
-      _index = banks.indexOf(i.first);
+      bankN = banks.where((b) => b.bankId == _bank).first;
+    } else {
+      bankN = Bank(bankId: '', bankName: 'Pilih Bank');
     }
-    /*else {
-      _index = 0;
-    }*/
-
-    return _index;
-  }
-
-  NewMember userData(NewMember _userData) {
-    return widget.model.nodeEditData;
+    return bankN;
   }
 
   void getBanks() async {
@@ -101,48 +94,54 @@ class _BankDropdownState extends State<BankDropdown> {
   }
 
   DropdownSearch _dDSearch() {
-    return DropdownSearch<Bank>(
-        mode: Mode.BOTTOM_SHEET,
-        maxHeight: 450,
-        compareFn: (Bank i, Bank s) => i.bankId == s.bankId,
-        autoFocusSearchBox: true,
-        showAsSuffixIcons: true,
-        validator: (Bank b) => b.bankId == null || b.bankId == '' ? '' : null,
-        //showClearButton: true,
-        dropdownButtonBuilder: (_) => Padding(
-              padding: const EdgeInsets.only(right: 0.0),
-              child: const Icon(
-                Icons.arrow_drop_down,
-                size: 24,
-                color: Colors.black,
-              ),
-            ),
-        dropdownSearchDecoration: InputDecoration(filled: false, border: null),
-        searchBoxDecoration: InputDecoration(icon: Icon(Icons.search)),
-        showSearchBox: true,
-        showSelectedItem: true,
-        items: banks,
-        hint: " ",
-        itemAsString: (Bank banks) => banks.bankName,
-        //selectedItem: defaultSelected,
-        //popupItemDisabled: (Bank s) => s.bankId,
-        selectedItem: mounted
-            ? banks.isNotEmpty &&
-                    widget.model.bankDropDownValue.bankId != '-' &&
-                    widget.model.bankDropDownValue.bankId != null &&
-                    widget.model.bankDropDownValue.bankId.isNotEmpty
-                ? banks[_ibank(widget.model.bankDropDownValue.bankId)]
-                : Bank(bankId: '', bankName: 'Pilih Bank')
-            : null,
-        dropdownBuilder: _customDropDown,
-        popupItemBuilder: _customPopupItemBuilder,
-        onChanged: (Bank bank) {
-          print(bank.bankId);
+    if (banks.isNotEmpty && widget.model.nodeEditData.bankId != null) {
+      _ibank(widget.model.nodeEditData.bankId);
+      Bank(bankId: '', bankName: 'Pilih Bank');
 
-          widget.model.bankDropDownValue.bankId = bank.bankId;
-          widget.model.isBankChanged =
-              true; //?check this line of code for editdata form related issues
-        });
+      return DropdownSearch<Bank>(
+          mode: Mode.BOTTOM_SHEET,
+          maxHeight: 450,
+          compareFn: (Bank i, Bank s) => i.bankId == s.bankId,
+          autoFocusSearchBox: true,
+          showAsSuffixIcons: true,
+          validator: (Bank b) => b.bankId == null || b.bankId == '' ? '' : null,
+          //showClearButton: true,
+          dropdownButtonBuilder: (_) => Padding(
+                padding: const EdgeInsets.only(right: 0.0),
+                child: const Icon(
+                  Icons.arrow_drop_down,
+                  size: 24,
+                  color: Colors.black,
+                ),
+              ),
+          dropdownSearchDecoration:
+              InputDecoration(filled: false, border: null),
+          searchBoxDecoration: InputDecoration(icon: Icon(Icons.search)),
+          showSearchBox: true,
+          showSelectedItem: true,
+          items: banks,
+          hint: " ",
+          itemAsString: (Bank banks) => banks.bankName,
+          //selectedItem: defaultSelected,
+          //popupItemDisabled: (Bank s) => s.bankId,
+          selectedItem: mounted
+              ? banks.isNotEmpty && widget.model.nodeEditData.bankId != null
+                  ? _ibank(widget.model.nodeEditData.bankId)
+                  : Bank(bankId: '', bankName: 'Pilih Bank')
+              : Bank(bankId: '', bankName: 'Pilih Bank'),
+          dropdownBuilder: _customDropDown,
+          popupItemBuilder: _customPopupItemBuilder,
+          onChanged: (Bank bank) {
+            print(bank.bankId);
+
+            widget.model.bankDropDownValue.bankId = bank.bankId;
+            widget.model.isBankChanged =
+                true; //?check this line of code for editdata form related issues
+          });
+    } else {
+      return DropdownSearch();
+    }
+
     //selectedItem: banks[0]);
   }
 

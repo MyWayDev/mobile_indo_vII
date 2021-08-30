@@ -11,11 +11,11 @@
 
 
 ###
-@var = 03107443
+@var = 03055680
 @vari = 02001144
 
 ###
-GET https://mywayindoapi.azurewebsites.net/api/userinvoices/{{var}}
+GET https://mywayindoapi.azurewebsites.net/api/distrratio/{{var}}
 ###
 GET https://mywayindoapi.azurewebsites.net/api/userinvoices/{{var}}
 ###
@@ -23,6 +23,7 @@ GET https://mywayindoapi.azurewebsites.net/api/userinvoices/{{var}}
 GET https://mywayindoapi.azurewebsites.net/api/userpending/{{vari}}
 
 ###
+
 
 GET  https://{{host}}/bonus_history/{{var}}
 
@@ -46,6 +47,12 @@ GET https://{{host}}/bonus_history/{{var}}
 ###
 GET https://{{host}}/get_bank_info
 ###
+GET  https://{{host}}/memberId/{{vari}} HTTP/1.1
+ 
+###
+GET http://mywayapi.azurewebsites.net/api/memberid/00005894 HTTP/1.1
+###
+
 POST  https://{{host}}/edit_distr/ HTTP/1.1
 Content-Type: application/json
 
@@ -76,6 +83,59 @@ Content-Type: application/json
     "BANK_AC_LNAME":"umi",
     "DS_BANK":"00000002"
 }
+###
+PUT   https://{{host}}/invoice/ HTTP/1.1
+Content-Type: application/json
+{
+    "a9master": {
+        "STORE_ID": "02",
+        "BRANCH_ID": "02",
+        "CUS_VEN_ID": "00000001",
+        "USER_ID": "003"
+    },
+    "apmaster": {
+        "STORE_ID": "02",
+        "SO_INV_TYPE": "CR",
+        "GROSS_TOTAL": 23100,
+        "NET_TOTAL": 23100,
+        "PRJ_ID": "9999",
+        "DS_SHIPMENT_COMP": "00000001",
+        "DS_SHIPMENT_PLACE": "01",
+        "AREMARKS": "9",
+        "SHIPMTHD_A": "{for bonus}",
+        "SHIPMTHD_L": "{for backorder}"
+    },
+    "aadetail": [
+        {
+            "ITEM_ID": "4227",
+            "QTY": 1,
+            "DS_SHIPMENT_COMP": "00000001",
+            "DS_SHIPMENT_PLACE": "01"
+        }
+    ],
+    "aqdetail": [
+        {
+            "ITEM_ID": "4227",
+            "QTY_REQ": 1,
+            "UNIT_PRICE": 23100,
+            "NET_PRICE": 23100,
+            "TOT_PRICE": 23100,
+            "ITEM_BP": 8,
+            "ITEM_BV": 19200
+        }
+    ],
+    "ap3": [
+        {
+            "DISTR_ID": "02001144",
+            "ANAME":""
+        },
+        {
+            "DISTR_ID": "02001144",
+            "ANAME":""
+        }
+    ]
+}
+
 ###
 PUT   https://{{host}}/memregister_updated/00000001/020001/BIREUEN/ADDRESS+2021/CR/02/ HTTP/1.1
 Content-Type: application/json

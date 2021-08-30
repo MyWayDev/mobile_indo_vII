@@ -526,7 +526,8 @@ class _OrderPage extends State<OrderPage> {
                                                 splashColor: Colors.pink[900],
                                               )))))
                     : Container(),
-                model.itemorderlist.isNotEmpty
+                model.itemorderlist.isNotEmpty &&
+                        model.desrvBonusList.isNotEmpty
                     ? BonusDeduct(model)
                     : Container(),
                 model.isBulk ? BulkGiftsAndPromos(model) : Container(),

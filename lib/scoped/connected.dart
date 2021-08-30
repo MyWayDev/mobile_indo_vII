@@ -1718,7 +1718,7 @@ class MainModel extends Model {
     //addAdminToOrder('91');
     //print("courier fee test=> :$courierfee");
 
-    if (giftorderList.length > 0 || promoOrderList.length > 0) {
+    /* if (giftorderList.length > 0 || promoOrderList.length > 0) {
       giftorderList.forEach(
         (g) => g.pack.forEach((p) => {p.bp = 0: p.bv = 0.0}),
       );
@@ -1745,7 +1745,7 @@ class MainModel extends Model {
     }
     if (courierfee > 0) {
       addCourierToOrder('90', courierfee);
-    }
+    }*/
 
     SalesOrder salesOrder = SalesOrder(
       distrId: distrId,

@@ -3,6 +3,8 @@ import 'package:http/http.dart';
 import 'package:mor_release/models/user.dart';
 import 'package:mor_release/pages/profile/bankDropdown.dart';
 import 'package:mor_release/scoped/connected.dart';
+import 'package:mor_release/models/area.dart';
+
 import '../const.dart';
 
 class ProfileForm extends StatefulWidget {
@@ -69,11 +71,13 @@ class _ProfileFormState extends State<ProfileForm> {
   @override
   void initState() {
     _memberEditData = widget.model.nodeEditData;
+    widget.model.bankDropDownValue = Bank(bankId: '', bankName: '');
     super.initState();
   }
 
   @override
   void dispose() {
+    widget.model.bankDropDownValue = Bank(bankId: '', bankName: '');
     super.dispose();
   }
 
@@ -83,7 +87,39 @@ class _ProfileFormState extends State<ProfileForm> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          BankDropdown(widget.model),
+          Row(
+            children: [
+              Expanded(
+                  child: Wrap(
+                children: [
+                  BankDropdown(
+                    widget.model,
+                    isInsert: true,
+                  ),
+                  Container(
+                      height: 22,
+                      child: TextFormField(
+                          onChanged: (String value) {
+                            value;
+                          },
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) {
+                            print(
+                                'bankId=>${widget.model.bankDropDownValue.bankId}');
+                            value = widget.model.bankDropDownValue.bankId;
+
+                            if (value.isEmpty || value == null || value == '') {
+                              return '    silahkan pilih bank';
+                            } else
+                              return null;
+                          }))
+                ],
+              ))
+            ],
+          ),
           Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
