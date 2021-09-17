@@ -70,6 +70,12 @@ class _ItemsPage extends State<ItemsPage> with SingleTickerProviderStateMixin {
       model.itemData = itemData;
       model.searchResult = searchResult;
 
+      /* itemData.forEach((i) {
+        if (i.promoItems.isNotEmpty) {
+          i.promoItems.forEach((i) => print(i.toString()));
+        }
+      });*/
+
       return Scaffold(
         floatingActionButton: FloatingActionButton.extended(
           label: Padding(

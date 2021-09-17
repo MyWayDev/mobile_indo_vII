@@ -25,6 +25,9 @@ class Item {
   List grp;
   String usage;
   var weight;
+  var promoWeight;
+  List promoItems;
+  List<Item> promoItemsDetails = [];
 
   Item(
       {this.key,
@@ -49,7 +52,10 @@ class Item {
       this.cat,
       this.grp,
       this.usage,
-      this.weight});
+      this.weight,
+      this.promoWeight,
+      this.promoItems,
+      this.promoItemsDetails});
 
   final formatter = NumberFormat("#,###");
   String get priceFormat {
@@ -81,7 +87,9 @@ class Item {
         cat = snapshot.value['catagory'],
         grp = snapshot.value['group'],
         usage = snapshot.value['usage'],
-        weight = snapshot.value['weight'] ?? 0.0;
+        weight = snapshot.value['weight'] ?? 0.0,
+        promoWeight = snapshot.value['promoWeightt'] ?? 0.0,
+        promoItems = snapshot.value['promoItems'] ?? [];
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(

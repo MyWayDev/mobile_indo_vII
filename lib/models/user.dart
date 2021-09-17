@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
 
 class User {
   String key;
   String distrId;
+  String joinDate;
   String name;
   String distrIdent;
   String email;
@@ -25,6 +27,7 @@ class User {
 
   User(
       {this.distrId,
+      this.joinDate,
       this.email,
       this.distrIdent,
       this.phone,
@@ -40,6 +43,17 @@ class User {
       this.tester,
       this.bankId,
       this.token});
+  final fDate = new DateFormat('yyyy-MM');
+  var now;
+  var _joinDate;
+  bool _newStart;
+  bool get newStart {
+    now = fDate.format(new DateTime.now());
+    _joinDate = joinDate.substring(0, 7);
+    //  print('now:$now' + '<===>' + 'joinDate:${joinDate.substring(0, 7)}');
+    now == _joinDate ? _newStart = true : _newStart = false;
+    return _newStart;
+  }
 
   toJson() {
     return {
@@ -59,6 +73,7 @@ class User {
   factory User.formJson(Map<String, dynamic> json) {
     return User(
         distrId: json['DISTR_ID'] ?? '',
+        joinDate: json['JOIN_DATE'] ?? '',
         name: json['LNAME'] ?? '',
         distrIdent: json['DISTR_IDENT'] ?? '',
         email: json['E_MAIL'] ?? '',
@@ -358,13 +373,46 @@ class Member {
 class DistrBonus {
   String distrId;
   String name;
+  String accountName;
+  String accountId;
   String period;
   String status;
   var bonus;
+  var paidBonus;
+  String docDate;
+  String branch;
+  String notes;
 
-  DistrBonus({this.distrId, this.name, this.bonus, this.status, this.period});
+  DistrBonus(
+      {this.distrId,
+      this.name,
+      this.accountName,
+      this.accountId,
+      this.bonus,
+      this.status,
+      this.period,
+      this.paidBonus,
+      this.branch,
+      this.docDate,
+      this.notes});
   toJson() {
     return {"DISTR_ID": distrId, "ANAME": bonus, "ADD_DATE": period};
+  }
+
+  toJsonHistory() {
+    return {
+      "distr_id": distrId,
+      "LNAME": name,
+      "PERIOD_DATE": period,
+      "TRANS_AMOUNT": bonus,
+      "PAID_AMOUNT": paidBonus,
+      "DOC_DATE": docDate,
+      "NOTES": notes,
+      "USER_ID": accountId,
+      "USER_NAME": accountName,
+      "BRANCH": branch,
+      "IS_TEMPLATE": status,
+    };
   }
 
   String distrBonusToJson(DistrBonus distrBonus) {
@@ -372,11 +420,32 @@ class DistrBonus {
     return json.encode(dyn);
   }
 
+  String bonusHistoryToJson(DistrBonus distrBonus) {
+    final dyn = distrBonus.toJsonHistory();
+    return json.encode(dyn);
+  }
+
   factory DistrBonus.fromJson(Map<dynamic, dynamic> json) {
     return DistrBonus(
-        distrId: json['DISTR_ID'],
+        distrId: json['distr_id'],
         bonus: json['NET_DESRV'] ?? 0,
         status: json['IS_TEMPLATE'] ?? '',
         period: json['MONTH'] ?? '');
+  }
+
+  factory DistrBonus.fromJsonHistory(Map<dynamic, dynamic> json) {
+    return DistrBonus(
+      distrId: json['distr_id'],
+      name: json['LNAME'] ?? '',
+      bonus: json['TRANS_AMOUNT'] ?? 0,
+      paidBonus: json['PAID_AMOUNT'] ?? 0,
+      notes: json['NOTES'] ?? '',
+      accountId: json['USER_ID'] ?? '',
+      accountName: json['USER_NAME'] ?? '',
+      branch: json['BRANCH'] ?? '',
+      status: json['IS_TEMPLATE'] ?? '',
+      period: json['PERIOD_DATE'] ?? '',
+      docDate: json['DOC_DATE'] ?? '',
+    );
   }
 }

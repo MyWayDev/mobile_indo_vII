@@ -85,7 +85,7 @@ class _MyApp extends State<MyApp> {
           id: _random,
         );
 
-        print(" onMessage called ${(msg)}");
+        // print(" onMessage called ${(msg)}");
       },
       onLaunch: (Map<String, dynamic> msg) async {
         note.showOngoingNotification(

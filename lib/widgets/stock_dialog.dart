@@ -70,9 +70,66 @@ class _StockDialog extends State<StockDialog> {
             decoration:
                 BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
             child: Column(children: <Widget>[
+              itemData[index].promoItemsDetails.length > 0
+                  ? Container(
+                      width: 151,
+                      height: 55,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: itemData[index].promoItemsDetails.length,
+                          itemBuilder: (context, i) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  itemData[index].promoItemsDetails[i].itemId,
+                                  style: TextStyle(
+                                      fontSize: 10.5,
+                                      color: Colors.orange[800],
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                ScopedModelDescendant<MainModel>(builder:
+                                    (BuildContext context, Widget child,
+                                        MainModel model) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => Details(
+                                                  itemData[index]
+                                                      .promoItemsDetails[i],
+                                                  model.getCaouselItems(itemData[
+                                                          index]
+                                                      .promoItemsDetails[i])),
+                                            ));
+                                      },
+                                      child: CircleAvatar(
+                                        child: Text(
+                                          'GRATIS',
+                                          style: TextStyle(
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.purple[900]),
+                                        ),
+                                        radius: 19,
+                                        backgroundColor: Colors.grey[300],
+                                        backgroundImage: NetworkImage(
+                                          itemData[index]
+                                              .promoItemsDetails[i]
+                                              .imageUrl,
+                                        ),
+                                      ));
+                                })
+                              ],
+                            );
+                          }),
+                    )
+                  : Container(),
               Container(
                   child: Flexible(
-                      flex: 1,
+                      flex: 2,
                       child: Column(children: <Widget>[
                         ScopedModelDescendant<MainModel>(builder:
                             (BuildContext context, Widget child,
@@ -84,30 +141,30 @@ class _StockDialog extends State<StockDialog> {
                                 Text(
                                   'Bp ${itemData[index].bp.toString()}',
                                   style: TextStyle(
-                                      fontSize: 15.0,
+                                      fontSize: 13.0,
                                       fontWeight: FontWeight.bold,
                                       color:
                                           Colors.red[900] //Color(0xFFFF8C00),
                                       ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 8, left: 18),
+                                  padding: EdgeInsets.only(top: 12, left: 30),
                                   child: CircleAvatar(
                                     child: Padding(
-                                        padding: EdgeInsets.only(top: 101),
+                                        padding: EdgeInsets.only(top: 63),
                                         child: BadgeIconButton(
                                           itemCount: qty,
                                           // required
                                           icon: Icon(
                                             Icons.shopping_cart,
                                             color: Colors.pink[900],
-                                            size: 36.0,
+                                            size: 30.0,
                                           ), // required
                                           //badgeColor: Colors.pink[900],
                                           badgeTextColor: Colors.white,
                                         )),
-                                    minRadius: 40,
-                                    maxRadius: 50,
+                                    minRadius: 32,
+                                    maxRadius: 36,
                                     backgroundColor: Colors.grey[200],
                                     backgroundImage: NetworkImage(
                                       itemData[index].imageUrl,
@@ -117,7 +174,7 @@ class _StockDialog extends State<StockDialog> {
                                 Text(
                                   'Rp ${itemData[index].priceFormat}',
                                   style: TextStyle(
-                                      fontSize: 14.0,
+                                      fontSize: 13.0,
                                       fontWeight: FontWeight.bold,
                                       color: Colors
                                           .green[700] // Color(0xFFFF8C00),
@@ -143,7 +200,7 @@ class _StockDialog extends State<StockDialog> {
                     IconButton(
                       icon: Icon(
                         Icons.remove_circle,
-                        size: 33.0,
+                        size: 32.0,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -157,7 +214,7 @@ class _StockDialog extends State<StockDialog> {
                       //disabledColor: Colors.white,
                       icon: Icon(
                         Icons.add_circle,
-                        size: 33.0,
+                        size: 32.0,
                         color: Colors.green,
                       ),
                       /*  onPressed: () async {

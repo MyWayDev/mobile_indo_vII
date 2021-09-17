@@ -9,9 +9,9 @@
 @type = application
 @contentType = {{type}}/{{format}}
 
-
 ###
-@var = 03055680
+@var = 03108301
+###   03055680
 @vari = 02001144
 
 ###
@@ -20,18 +20,18 @@ GET https://mywayindoapi.azurewebsites.net/api/distrratio/{{var}}
 GET https://mywayindoapi.azurewebsites.net/api/userinvoices/{{var}}
 ###
 
-GET https://mywayindoapi.azurewebsites.net/api/userpending/{{vari}}
+GET https://mywayindoapi.azurewebsites.net/api/memberpromo/{{var}}
 
 ###
 
 
-GET  https://{{host}}/bonus_history/{{var}}
+GET  https://{{host}}/bonus_history/{{vari}}
 
 ###
-GET  http:s//{{host}}/areas
+GET  https://{{host}}/areas
 
 ###
-GET http:s//{{host}}/stock/1161/02
+GET https://{{host}}/stock/1161/02
 ###
 GET https://{{host}}/itemdetails/8332
 ###

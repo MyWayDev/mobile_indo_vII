@@ -280,14 +280,15 @@ class _BonusDeductState extends State<BonusDeduct> {
           ),
           child: Stack(children: <Widget>[
             Container(
-              constraints: BoxConstraints(maxWidth: 220.0, maxHeight: 20.0),
+              // constraints: BoxConstraints(maxWidth: 220.0, minHeight: 50.0),
               alignment: Alignment.bottomRight,
               child: widget.model.distrBonusList.isNotEmpty
                   ? Text(
                       _formatBonus
                               .format(widget.model.distrBonusDeductTotal()) +
                           ' ' +
-                          'Rp',
+                          'Rp' +
+                          '  ',
                       style: TextStyle(
                           color: Colors.greenAccent,
                           fontSize: 12.5,
@@ -296,7 +297,7 @@ class _BonusDeductState extends State<BonusDeduct> {
                   : Container(),
             ),
             Container(
-              constraints: BoxConstraints(maxWidth: 220.0, maxHeight: 20.0),
+              // constraints: BoxConstraints(maxWidth: 220.0, minHeight: 50.0),
               alignment: Alignment.center,
               child: Text(
                 "Pemotongan Bonus",
@@ -308,7 +309,7 @@ class _BonusDeductState extends State<BonusDeduct> {
               ),
             ),
             Container(
-              constraints: BoxConstraints(maxWidth: 100.0, minHeight: 32.0),
+              // constraints: BoxConstraints(maxWidth: 220.0, minHeight: 20.0),
               alignment: Alignment.topLeft,
               child: widget.model.distrBonusList.isNotEmpty
                   ? BadgeIconButton(

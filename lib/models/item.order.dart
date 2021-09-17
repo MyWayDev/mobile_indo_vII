@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:mor_release/models/gift.order.dart';
 import 'package:mor_release/models/user.dart';
 
+import 'item.dart';
+
 class ItemOrder {
   String itemId;
   double price;
@@ -15,9 +17,10 @@ class ItemOrder {
   int qty;
   String name;
   String img;
+  List<Item> promoItemsDetails;
 
   double get totalWeight {
-    double _totalWeight = qty * weight;
+    double _totalWeight = weight * qty;
     return _totalWeight;
   }
 
@@ -31,16 +34,16 @@ class ItemOrder {
     return _totalBp;
   }
 
-  ItemOrder({
-    this.itemId,
-    this.price,
-    this.qty,
-    this.bp,
-    this.bv,
-    this.name,
-    this.weight,
-    this.img,
-  });
+  ItemOrder(
+      {this.itemId,
+      this.price,
+      this.qty,
+      this.bp,
+      this.bv,
+      this.name,
+      this.weight,
+      this.img,
+      this.promoItemsDetails});
 
   Map<String, dynamic> toJson() => {
         "ITEM_ID": itemId,

@@ -4,9 +4,10 @@ import 'package:mor_release/models/item.dart';
 import 'package:mor_release/scoped/connected.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import 'itemDetails/details.dart';
+
 class ItemCard extends StatelessWidget {
   final List<Item> itemData;
-
   final int index;
 
   ItemCard(this.itemData, this.index);
@@ -28,17 +29,100 @@ class ItemCard extends StatelessWidget {
                       child: Stack(
                         fit: StackFit.loose,
                         children: <Widget>[
-                          Image.network(
-                            itemData[index].imageUrl ??
-                                '', //'https://firebasestorage.googleapis.com/v0/b/mobile-coco.appspot.com/o/flamelink%2Fmedia%2F${itemData[index].image[0].toString()}_${itemData[index].itemId}.png?alt=media&token=274fc65f-8295-43d5-909c-e2b174686439',
-                            scale: 2.75,
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              itemData[index].promoItemsDetails.length > 0
+                                  ? Container(
+                                      width: 150,
+                                      height: 55,
+                                      child: ListView.builder(
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount: itemData[index]
+                                              .promoItemsDetails
+                                              .length,
+                                          itemBuilder: (context, i) {
+                                            return Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  itemData[index]
+                                                      .promoItemsDetails[i]
+                                                      .itemId,
+                                                  style: TextStyle(
+                                                      fontSize: 10.5,
+                                                      color: Colors.orange[800],
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                ScopedModelDescendant<
+                                                        MainModel>(
+                                                    builder:
+                                                        (BuildContext context,
+                                                            Widget child,
+                                                            MainModel model) {
+                                                  return GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => Details(
+                                                                  itemData[index]
+                                                                          .promoItemsDetails[
+                                                                      i],
+                                                                  model.getCaouselItems(
+                                                                      itemData[index]
+                                                                              .promoItemsDetails[
+                                                                          i])),
+                                                            ));
+                                                      },
+                                                      child: CircleAvatar(
+                                                        child: Text(
+                                                          'GRATIS',
+                                                          style: TextStyle(
+                                                              fontSize: 9,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: Colors
+                                                                  .grey[800]),
+                                                        ),
+                                                        radius: 19,
+                                                        backgroundColor:
+                                                            Colors.grey[300],
+                                                        backgroundImage:
+                                                            NetworkImage(
+                                                          itemData[index]
+                                                              .promoItemsDetails[
+                                                                  i]
+                                                              .imageUrl,
+                                                        ),
+                                                      ));
+                                                })
+                                              ],
+                                            );
+                                          }),
+                                    )
+                                  : Container(),
+                              Image.network(
+                                itemData[index].imageUrl ??
+                                    '', //'https://firebasestorage.googleapis.com/v0/b/mobile-coco.appspot.com/o/flamelink%2Fmedia%2F${itemData[index].image[0].toString()}_${itemData[index].itemId}.png?alt=media&token=274fc65f-8295-43d5-909c-e2b174686439',
+                                scale: 2.5,
+                              ),
+                            ],
                           ),
+
                           // : Container(),
                           itemData[index].promoImageUrl == '' ||
                                   itemData[index].promoImageUrl == null
                               ? Container()
                               : Positioned(
                                   left: 3.0,
+                                  bottom: 20,
                                   child: Opacity(
                                       opacity: 0.70,
                                       child: Image.network(
@@ -48,7 +132,7 @@ class ItemCard extends StatelessWidget {
                                       )
 
                                       //
-                                      ))
+                                      )),
                         ],
                       ),
                     ),
@@ -57,6 +141,9 @@ class ItemCard extends StatelessWidget {
                         fit: FlexFit.tight,
                         flex: 1,
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Padding(
                               padding: EdgeInsets.only(bottom: 2.0),
@@ -104,7 +191,7 @@ class ItemCard extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 direction: Axis.vertical,
                                 children: <Widget>[
-                                  Row(
+                                  Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[

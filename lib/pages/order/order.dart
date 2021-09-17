@@ -7,6 +7,7 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:mor_release/models/user.dart';
 import 'package:mor_release/pages/gift/gift_card.dart';
 import 'package:mor_release/pages/gift/promo/promo_card.dart';
+import 'package:mor_release/pages/items/itemDetails/details.dart';
 import 'package:mor_release/pages/order/bulkOrder.dart';
 import 'package:mor_release/pages/order/end_order.dart';
 import 'package:mor_release/pages/order/widgets/bonus.deduct.dart';
@@ -588,10 +589,114 @@ Widget _orderExp(BuildContext context, MainModel model, NumberFormat formatter,
                                         direction: Axis.horizontal,
                                         //  direction: Axis.horizontal,
                                         children: <Widget>[
+                                          model
+                                                      .itemorderlist[i]
+                                                      .promoItemsDetails
+                                                      .length >
+                                                  0
+                                              ? Container(
+                                                  width: model
+                                                                  .itemorderlist[
+                                                                      i]
+                                                                  .promoItemsDetails
+                                                                  .length ==
+                                                              2 ||
+                                                          model
+                                                                  .itemorderlist[
+                                                                      i]
+                                                                  .promoItemsDetails
+                                                                  .length ==
+                                                              3
+                                                      ? 108
+                                                      : model
+                                                                  .itemorderlist[
+                                                                      i]
+                                                                  .promoItemsDetails
+                                                                  .length >
+                                                              3
+                                                          ? 146
+                                                          : 36,
+                                                  height: 55,
+                                                  child: ListView.builder(
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      itemCount: model
+                                                          .itemorderlist[i]
+                                                          .promoItemsDetails
+                                                          .length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        return Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                              model
+                                                                  .itemorderlist[
+                                                                      i]
+                                                                  .promoItemsDetails[
+                                                                      index]
+                                                                  .itemId,
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      10.5,
+                                                                  color: Colors
+                                                                          .orange[
+                                                                      800],
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                            GestureDetector(
+                                                                onTap: () {
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                        builder: (context) => Details(
+                                                                            model.itemorderlist[i].promoItemsDetails[index],
+                                                                            model.getCaouselItems(model.itemorderlist[i].promoItemsDetails[index])),
+                                                                      ));
+                                                                },
+                                                                child:
+                                                                    CircleAvatar(
+                                                                  child: Text(
+                                                                    'GRATIS',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            9,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        color: Colors
+                                                                            .grey[800]),
+                                                                  ),
+                                                                  radius: 18,
+                                                                  backgroundColor:
+                                                                      Colors.grey[
+                                                                          300],
+                                                                  backgroundImage:
+                                                                      NetworkImage(
+                                                                    model
+                                                                        .itemorderlist[
+                                                                            i]
+                                                                        .promoItemsDetails[
+                                                                            index]
+                                                                        .imageUrl,
+                                                                  ),
+                                                                ))
+                                                          ],
+                                                        );
+                                                      }),
+                                                )
+                                              : Container(),
                                           Container(
                                             width: 38,
                                             child: Text(
-                                              model.itemorderlist[i].itemId,
+                                              " " +
+                                                  model.itemorderlist[i].itemId,
                                               style: TextStyle(
                                                 fontSize: 13.0,
                                                 fontWeight: FontWeight.bold,
@@ -603,8 +708,8 @@ Widget _orderExp(BuildContext context, MainModel model, NumberFormat formatter,
                                               flex: 1,
                                               // width: 113,
                                               child: Padding(
-                                                padding:
-                                                    EdgeInsets.only(right: 8),
+                                                padding: EdgeInsets.only(
+                                                    right: 8, left: 3),
                                                 child: Text(
                                                   model.itemorderlist[i].name,
                                                   softWrap: true,

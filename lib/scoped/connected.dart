@@ -217,7 +217,10 @@ class MainModel extends Model {
         await http.get('${settings.apiUrl}/deserve_bonus/$distrId');
     if (response.statusCode == 200) {
       final _bonus = json.decode(response.body) as List;
-      _distrBonusDesrvList = _bonus.map((e) => DistrBonus.fromJson(e)).toList();
+      _distrBonusDesrvList = _bonus
+          .map((e) => DistrBonus.fromJson(e))
+          .where((I) => I.status == '1')
+          .toList();
       for (DistrBonus d in distrBonusList) {
         _distrBonusDesrvList.forEach((e) {
           if (e.bonus == d.bonus) _removeList.add(e);
@@ -351,6 +354,21 @@ class MainModel extends Model {
     return _recoImage;
   }
 
+  void getPromoItems(Item item) {
+    item.promoItemsDetails.clear();
+    if (item.promoItems.isNotEmpty) {
+      item.promoItems.forEach((i) {
+        for (Item d in itemData) {
+          if (d.key.toString() == i.toString()) {
+            item.promoItemsDetails.add(d);
+          }
+        }
+      });
+    }
+
+    // promoItems.addAll(item.promoItems)
+  }
+
   /*List<String> getRecoImage() {
     _recoImage.clear();
 
@@ -437,7 +455,6 @@ class MainModel extends Model {
     pass = snapshot.value.toString();
     print('pass=$pass');
     notifyListeners();
-
     //print('Setting${settings.bannerUrl}');
     return pass;
   }
@@ -662,16 +679,17 @@ class MainModel extends Model {
   }
 
   void addItemOrder(Item item, int qty) {
+    print(item.promoWeight.toString());
     final ItemOrder itemorder = ItemOrder(
-      itemId: item.itemId,
-      price: double.parse(item.price.toString()),
-      bp: item.bp,
-      bv: double.parse(item.bv.toString()),
-      qty: qty,
-      name: item.name,
-      weight: item.weight,
-      img: item.imageUrl,
-    );
+        itemId: item.itemId,
+        price: double.parse(item.price.toString()),
+        bp: item.bp,
+        bv: double.parse(item.bv.toString()),
+        qty: qty,
+        name: item.name,
+        weight: item.weight + item.promoWeight,
+        img: item.imageUrl,
+        promoItemsDetails: item.promoItemsDetails ?? []);
 
     var x = itemorderlist.where((orderItem) => orderItem.itemId == item.itemId);
     int i;
@@ -770,6 +788,7 @@ class MainModel extends Model {
     giftorderList.clear();
     promoOrderList.clear();
     itemorderlist.remove(itemorderlist[i]);
+
     notifyListeners();
   }
 
@@ -782,7 +801,8 @@ class MainModel extends Model {
         price: double.parse(item.price.toString()),
         bp: item.bp,
         bv: double.parse(item.bv.toString()),
-        qty: qty);
+        qty: qty,
+        promoItemsDetails: item.promoItemsDetails);
 
     var x = itemorderlist.where((orderItem) => orderItem.itemId == item.itemId);
     int i;
@@ -840,7 +860,7 @@ class MainModel extends Model {
   double orderWeight() {
     double x = 0;
     for (ItemOrder i in itemorderlist) {
-      x += i.weight * i.qty;
+      x += (i.weight * i.qty);
     }
     notifyListeners();
     x += promoWeight() + giftWeight();
@@ -1087,21 +1107,44 @@ class MainModel extends Model {
     return promosOngoing ?? [];
   }
 
+  Future<int> getMemberPerBp(String distrId) async {
+    await memberJson(distrId);
+    http.Response response =
+        await http.get('${settings.apiUrl}/memberpromo/$distrId');
+    List _jMemberPerBp = json.decode(response.body);
+    MemberPerBp _memberPerBp = MemberPerBp.fromJson(_jMemberPerBp.first);
+
+    return _memberPerBp.bpA.toInt();
+  }
+
   List<Gift> giftQty;
   Future<void> checkGift(int orderbp, int giftbp) async {
-    int _qualifyBp = orderbp - giftbp;
+    int _qualifyBp;
+    int perBP = await getMemberPerBp(userInfo.distrId);
     List<Gift> gifts = [];
     gifts = await giftList();
     List<Gift> aprovedGift = [];
     giftQty = [];
 
-    gifts.forEach((g) => _qualifyBp / g.bp >= 1 ? aprovedGift.add(g) : null);
+    gifts.forEach((g) {
+      (g.newStart && memberData.newStart) ||
+              (!g.newStart && !memberData.newStart) ||
+              (!g.newStart && memberData.newStart)
+          ? !g.accumilitive
+              ? _qualifyBp = orderbp - (giftbp - 10000)
+              : _qualifyBp = (orderbp + perBP) - (giftbp - 10000)
+          : _qualifyBp = 0;
+
+      _qualifyBp / (g.bp) >= 1 ? aprovedGift.add(g) : aprovedGift = [];
+    });
 
 //gifts.forEach((g)=>qualifyBp/g.bp>=1?aprovedGift.add(g):null);
-    for (var i = 0; i < aprovedGift.length; i++) {
-      double x = _qualifyBp / aprovedGift[i].bp;
-      for (var e = 0; e < x.toInt(); e++) {
-        giftQty.add(aprovedGift[i]);
+    if (aprovedGift.length != 0) {
+      for (var i = 0; i < aprovedGift.length; i++) {
+        double x = _qualifyBp / aprovedGift[i].bp;
+        for (var e = 0; e < x.toInt(); e++) {
+          giftQty.add(aprovedGift[i]);
+        }
       }
     }
   }
@@ -2260,6 +2303,7 @@ for( var i = 0 ; i < _list.length; i++){
     databaseReference.onValue.listen((event) async {
       access = await setIsAllowed(User.fromSnapshot(event.snapshot).isAllowed);
       print('isAllowedxx:$access');
+
       if (!access) {
         itemorderlist.clear();
         giftorderList.clear();

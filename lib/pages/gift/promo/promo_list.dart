@@ -43,8 +43,6 @@ class _PromoList extends State<PromoList> {
                 ),
                 child: model.promoPacks.length > 0
                     ? ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: model.promoPacks.length,
                         itemBuilder: (context, i) {
                           return PromoCard(model.promoPacks, i);
                         },

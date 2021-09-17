@@ -11,6 +11,7 @@ import 'package:mor_release/pages/messages/tickets.dart';
 import 'package:mor_release/scoped/connected.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'account/report.tabs.dart';
+import 'models/item.dart';
 
 class BottomNav extends StatefulWidget {
   final String user;
@@ -72,6 +73,8 @@ class _BottomNav extends State<BottomNav> with SingleTickerProviderStateMixin {
     return ScopedModelDescendant<MainModel>(
         builder: (BuildContext context, Widget child, MainModel model) {
       fillDesrvBonusCheck(model);
+      updatePromoItems(model);
+
       return Scaffold(
         resizeToAvoidBottomInset: false,
         //resizeToAvoidBottomPadding: false,
@@ -154,6 +157,13 @@ class _BottomNav extends State<BottomNav> with SingleTickerProviderStateMixin {
     model.desrvBonusList = await model.distrBonusDesrv(model.userInfo.distrId);
   }
 
+  void updatePromoItems(MainModel model) {
+    for (Item d in model.itemData)
+      if (d.promoItems.isNotEmpty) {
+        model.getPromoItems(d);
+      }
+  }
+
   void _onMessageEntryAdded(Event event) {
     _msgsList.add(Ticket.fromSnapshot(event.snapshot));
 
@@ -176,10 +186,10 @@ class _BottomNav extends State<BottomNav> with SingleTickerProviderStateMixin {
     _msgCount = 0;
     if (int.parse(user) > 6) {
       _msgsList.forEach((f) => _msgCount += f.fromSupport);
-      print('msgs listener on:$_msgCount');
+      //('msgs listener on:$_msgCount');
     } else {
       _msgsList.forEach((f) => _msgCount += f.fromClient);
-      print('msgs listener on:$_msgCount');
+      // print('msgs listener on:$_msgCount');
     }
   }
 }

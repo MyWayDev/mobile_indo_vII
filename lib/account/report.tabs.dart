@@ -7,15 +7,23 @@ import 'package:mor_release/scoped/connected.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 
+import 'bonus_history.dart';
+
+class ReportInit extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Text('');
+  }
+}
+
 class ReportTabs extends StatelessWidget {
   final AppBar _appBar = AppBar(
-    leading: Container(),
     bottomOpacity: 0.0,
     backgroundColor: Colors.pink[900],
     elevation: 20,
     ///////////////////////Top Tabs Navigation Widget//////////////////////////////
     title: TabBar(
-      indicatorColor: Colors.grey[900],
+      indicatorColor: Colors.yellow[300],
       indicatorWeight: 6,
       indicatorSize: TabBarIndicatorSize.tab,
       tabs: <Widget>[
@@ -23,7 +31,7 @@ class ReportTabs extends StatelessWidget {
           icon: Icon(
             GroovinMaterialIcons.account_check,
             size: 32.0,
-            color: Colors.white,
+            color: Colors.purple[200],
           ),
         ),
         Tab(
@@ -47,6 +55,34 @@ class ReportTabs extends StatelessWidget {
             color: Colors.lightBlue[200],
           ),
         ),
+        Tab(
+          icon: Stack(
+            fit: StackFit.passthrough,
+            children: [
+              Positioned(
+                right: 3,
+                child: IconButton(
+                  onPressed: () {},
+
+                  //BonusHistory(model.userInfo.distrId, model.settings.apiUrl),
+                  icon: Icon(
+                    GroovinMaterialIcons.file_document,
+                    size: 31.0,
+                    color: Colors.white38,
+                  ),
+                ),
+              ),
+              Positioned(
+                  bottom: 5,
+                  left: 9,
+                  child: Icon(
+                    GroovinMaterialIcons.history,
+                    size: 25.0,
+                    color: Colors.pink[50],
+                  )),
+            ],
+          ),
+        ),
       ],
     ),
   );
@@ -56,7 +92,7 @@ class ReportTabs extends StatelessWidget {
     return ScopedModelDescendant<MainModel>(
         builder: (BuildContext context, Widget child, MainModel model) {
       return DefaultTabController(
-        length: 4,
+        length: 5,
         child: Scaffold(
           appBar: PreferredSize(
               preferredSize: Size.fromHeight(45.0), child: _appBar),
@@ -66,6 +102,8 @@ class ReportTabs extends StatelessWidget {
               NewReport(model.userInfo.distrId, model.settings.apiUrl),
               RatioReport(model.userInfo.distrId, model.settings.apiUrl),
               DetailsReport(model.userInfo.distrId, model.settings.apiUrl),
+              BonusHistory(model.userInfo.distrId, model.settings.apiUrl),
+
               // ExpansionTileSample() // SwitchPage(ItemsPage()),
               //OrderPage(), //SwitchPage(OrderPage()),
               //ProductList(),
@@ -87,19 +125,4 @@ class ReportTabs extends StatelessWidget {
       );
     });
   }
-/*new BottomNavigationBarItem(
-        title: new Text('Home'),
-        icon: new Stack(
-          children: <Widget>[
-            new Icon(Icons.home),
-            new Positioned(  // draw a red marble
-              top: 0.0,
-              right: 0.0,
-              child: new Icon(Icons.brightness_1, size: 8.0, 
-                color: Colors.redAccent),
-            )
-          ]
-        ),
-      )*/
-
 }
